@@ -97,7 +97,7 @@ export const asyncRoutes = [
     },
     children: [
       {
-        path: '基本信息',
+        path: '/vision/basic',
         component: () => import('@/views/vision/basic'),
         name: 'VisionBasic',
         meta: {
@@ -106,7 +106,7 @@ export const asyncRoutes = [
         }
       },
       {
-        path: '产品亮点',
+        path: 'vision/productHighlight',
         component: () => import('@/views/vision/productHighlight'),
         name: 'productHighlight',
         meta: {
@@ -115,7 +115,7 @@ export const asyncRoutes = [
         }
       },
       {
-        path: '最新咨询',
+        path: '/vision/latestNews',
         component: () => import('@/views/vision/latestNews'),
         name: 'latestNews',
         meta: {
@@ -124,7 +124,7 @@ export const asyncRoutes = [
         }
       },
       {
-        path: '成功案例',
+        path: '/vision/case',
         component: () => import('@/views/vision/case'),
         name: 'case',
         meta: {
@@ -133,7 +133,7 @@ export const asyncRoutes = [
         }
       },
       {
-        path: '专家观点',
+        path: 'vision/specialPoint',
         component: () => import('@/views/vision/specialPoint'),
         name: 'specialPoint',
         meta: {
