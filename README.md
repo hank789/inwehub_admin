@@ -2,8 +2,9 @@
 管理后台
 
 vue-element-admin
-  -. https://panjiachen.github.io/vue-element-admin-site/zh/guide/#功能
-  -. https://github.com/PanJiaChen/vue-element-admin
+  doc. https://panjiachen.github.io/vue-element-admin-site/zh/guide/#功能
+  source. https://github.com/PanJiaChen/vue-element-admin
+  demos https://panjiachen.github.io/vue-element-admin/
 
 # 开发环境
 npm run dev
