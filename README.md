@@ -13,4 +13,4 @@ npm run dev
 npm run build:prod
 
 # 打包测试环境
-npm run build:sit
+npm run build:stage

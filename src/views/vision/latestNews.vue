@@ -21,19 +21,19 @@
     </el-dialog>
 
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" width="80">
+      <el-table-column align="center" label="标题" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="180px" align="center" label="Date">
+      <el-table-column width="180px" align="center" label="来源">
         <template slot-scope="scope">
           <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="Author">
+      <el-table-column width="120px" align="center" label="收录时间">
         <template slot-scope="scope">
           <span>{{ scope.row.author }}</span>
         </template>
