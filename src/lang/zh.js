@@ -1,6 +1,12 @@
 export default {
   route: {
     dashboard: '首页',
+    vision: '视觉',
+    visionBasic: '基本信息',
+    productHighlight: '产品亮点',
+    latestNews: '最新咨询',
+    case: '成功案例',
+    specialPoint: '专家观点',
     introduction: '简述',
     documentation: '文档',
     guide: '引导页',
