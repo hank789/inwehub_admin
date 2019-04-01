@@ -20,56 +20,34 @@
       </div>
     </el-dialog>
 
-    <el-table ref="dragTable" v-loading="listLoading" :data="list" row-key="id" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="标题" width="80">
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+    <el-table ref="dragTable" v-loading="listLoading" :data="list" :border="false" row-key="id" fit highlight-current-row style="width: 100%">
+      <el-table-column align="center" label="" width="115">
+        <template>
+          <div class="container-case-img">
+            <img src="../../assets/404_images/404_cloud.png" alt="">
+          </div>
         </template>
       </el-table-column>
 
-      <el-table-column width="180px" align="center" label="来源">
-        <template slot-scope="scope">
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+      <el-table-column width="780px" align="center" label="">
+        <template>
+          <div class="container-case-info">
+            <div class="info-name">GeneDock</div>
+            <div class="info-describe">帮助合作伙伴在医学健康和卫生领域不断进行创新</div>
+          </div>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="收录时间">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+      <el-table-column align="center" label="" width="320">
+        <template>
+          <el-row>
+            <el-checkbox v-model="checked">显示</el-checkbox>
+            <el-button type="primary" icon="el-icon-edit" />
+            <el-button type="primary" icon="el-icon-delete" />
+          </el-row>
         </template>
       </el-table-column>
 
-      <el-table-column width="100px" label="Importance">
-        <template slot-scope="scope">
-          <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-        </template>
-      </el-table-column>
-
-      <el-table-column class-name="status-col" label="Status" width="110">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">
-            {{ scope.row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column min-width="300px" label="Title">
-        <template slot-scope="scope">
-          <router-link :to="'/example/edit/'+scope.row.id" class="link-type">
-            <span>{{ scope.row.title }}</span>
-          </router-link>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Actions" width="120">
-        <template slot-scope="scope">
-          <router-link :to="'/example/edit/'+scope.row.id">
-            <el-button type="primary" size="small" icon="el-icon-edit">
-              Edit
-            </el-button>
-          </router-link>
-        </template>
-      </el-table-column>
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
@@ -117,7 +95,8 @@ export default {
       },
       sortable: null,
       oldList: [],
-      newList: []
+      newList: [],
+      checked: true
     }
   },
   created() {
@@ -166,7 +145,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .edit-input {
     padding-right: 100px;
   }
@@ -174,5 +153,30 @@ export default {
     position: absolute;
     right: 15px;
     top: 10px;
+  }
+  .container-case-img {
+    width: 90px;
+    height: 60px;
+    border-radius: 4px;
+    background: pink;
+    margin: 10px 0;
+    img {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+  }
+
+  .container-case-info {
+    text-align: left;
+    font-size: 14px;
+    .info-name {
+      color: #4A5F7B;
+      font-family:PingFangSC-Medium;
+    }
+    .info-describe {
+      color: #7C8EA6;
+      margin-top: 12px;
+    }
   }
 </style>
