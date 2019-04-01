@@ -6,7 +6,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = 'vue-element-admin'
+const name = 'inwehub-admin'
 const port = 9527 // dev port
 
 // Explanation of each configuration item You can find it in https://cli.vuejs.org/config/
