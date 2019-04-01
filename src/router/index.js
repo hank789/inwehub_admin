@@ -93,7 +93,6 @@ export const asyncRoutes = [
     alwaysShow: true, // will always show the root menu
     meta: {
       title: 'vision',
-      icon: 'lock',
       roles: ['admin', 'editor']
     },
     children: [
