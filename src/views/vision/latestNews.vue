@@ -26,13 +26,11 @@
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-
       <el-table-column width="300px" align="center" label="来源">
         <template slot-scope="scope">
           <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-
       <el-table-column width="280px" align="center" label="收录时间">
         <template slot-scope="scope">
           <span>{{ scope.row.author }}</span>
