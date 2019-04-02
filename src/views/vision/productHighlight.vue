@@ -8,7 +8,11 @@
       :on-preview="handlePictureCardPreview"
       :on-remove="handleRemove"
     >
-      <i class="el-icon-plus" />
+      <div class="container-text">
+        <i class="el-icon-plus" />
+        <div>添加产品亮点图</div>
+        <div>推荐尺寸900px*1250px</div>
+      </div>
     </el-upload>
 
     <el-dialog :visible.sync="dialogVisible" class="image-list">
@@ -48,5 +52,25 @@ export default {
   .top-text {
     color: #7C8EA6;
     font-size: 14px;
+  }
+  .container-text {
+    margin-top: 139px;
+    i {
+      margin-bottom: 20px;
+    }
+    div {
+      color: #B1BDCC;
+      font-size: 14px;
+      line-height: 20px;
+    }
+  }
+</style>
+<style>
+  .avatar-image .el-upload--picture-card {
+    width: 266px;
+    height: 399px;
+    border: none;
+    line-height: 0px;
+    background: #F7FBFE;
   }
 </style>
