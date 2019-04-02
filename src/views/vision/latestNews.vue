@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" @click="dialogFormVisible = true">添加咨询</el-button>
+    <el-button type="primary" class="add-latest-news" @click="dialogFormVisible = true">添加咨询</el-button>
 
     <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
       <el-form :model="form">
@@ -140,6 +140,10 @@ export default {
 </style>
 
 <style>
+  .add-latest-news {
+    position: relative;
+    z-index: 9;
+  }
   .container-tabs {
     text-align: right;
     margin-top: -28px;
