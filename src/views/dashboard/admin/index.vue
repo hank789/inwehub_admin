@@ -15,7 +15,6 @@
       <div slot="header" class="clearfix">
         <span>小程序二维码</span>
 
-
       </div>
     </el-card>
 
@@ -47,7 +46,7 @@ const lineChartData = {
 export default {
   name: 'DashboardAdmin',
   components: {
-    LineChart,
+    LineChart
   },
   data() {
     return {
@@ -59,7 +58,7 @@ export default {
     handleSetLineChartData(type) {
       this.lineChartData = lineChartData[type]
     },
-    handleClick () {
+    handleClick() {
 
     }
   }
