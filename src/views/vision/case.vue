@@ -29,7 +29,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="780px" align="center" label="">
+      <el-table-column width="753px" align="center" label="">
         <template>
           <div class="container-case-info">
             <div class="info-name">GeneDock</div>
