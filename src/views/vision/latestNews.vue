@@ -25,7 +25,7 @@
       <el-tab-pane label="内容管理" name="second">内容管理</el-tab-pane>
     </el-tabs>
 
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="标题" width="340px">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
@@ -153,5 +153,8 @@ export default {
   }
   .container-tabs .el-tabs__content {
     display: none;
+  }
+  .container-table tbody tr td, .container-table thead tr th {
+    text-align: left !important;
   }
 </style>
