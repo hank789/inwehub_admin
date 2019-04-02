@@ -20,6 +20,11 @@
       </div>
     </el-dialog>
 
+    <el-tabs v-model="activeName" class="container-tabs" @tab-click="handleClick">
+      <el-tab-pane label="资讯管理" name="first">资讯管理</el-tab-pane>
+      <el-tab-pane label="内容管理" name="second">内容管理</el-tab-pane>
+    </el-tabs>
+
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="标题" width="340px">
         <template slot-scope="scope">
@@ -89,13 +94,17 @@ export default {
         page: 1,
         limit: 20
       },
-      checked: true
+      checked: true,
+      activeName: 'first'
     }
   },
   created() {
     this.getList()
   },
   methods: {
+    handleClick(tab, event) {
+      console.log(tab, event)
+    },
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
@@ -116,7 +125,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .edit-input {
     padding-right: 100px;
   }
@@ -127,5 +136,18 @@ export default {
   }
   .pagination-container {
    text-align: center;
+  }
+</style>
+
+<style>
+  .container-tabs {
+    text-align: right;
+    margin-top: -28px;
+  }
+  .container-tabs .el-tabs__nav {
+    float: right;
+  }
+  .container-tabs .el-tabs__content {
+    display: none;
   }
 </style>
