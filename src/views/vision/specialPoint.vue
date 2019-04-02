@@ -50,7 +50,7 @@
 
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total>0" class="pagination-container" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
   </div>
 </template>
 
@@ -178,5 +178,9 @@ export default {
       color: #7C8EA6;
       margin-top: 12px;
     }
+  }
+
+  .pagination-container {
+    text-align: center;
   }
 </style>
