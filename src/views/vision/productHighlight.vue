@@ -9,7 +9,7 @@
       :on-remove="handleRemove"
     >
       <div class="container-text">
-        <i class="el-icon-plus" />
+        <svg-icon icon-class="camera" />
         <div>添加产品亮点图</div>
         <div>推荐尺寸900px*1250px</div>
       </div>
@@ -55,8 +55,10 @@ export default {
   }
   .container-text {
     margin-top: 139px;
-    i {
-      margin-bottom: 20px;
+    svg {
+      font-size: 39px;
+      color: #B1BDCC;
+      margin-bottom: 10px;
     }
     div {
       color: #B1BDCC;
