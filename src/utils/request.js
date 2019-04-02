@@ -3,11 +3,13 @@ import { Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 
+axios.defaults.retry = 3
+axios.defaults.retryDelay = 1000
+axios.defaults.timeout = 10000
+
 // create an axios instance
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // api 的 base_url
-  withCredentials: true, // 跨域请求时发送 cookies
-  timeout: 5000 // request timeout
+  baseURL: process.env.VUE_APP_BASE_API
 })
 
 // request interceptor
@@ -16,14 +18,15 @@ service.interceptors.request.use(
     // Do something before request is sent
     if (store.getters.token) {
       // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
-      config.headers['X-Token'] = getToken()
+      config.headers['Authorization'] = 'bearer ' + getToken()
     }
+    console.log('requestConfig', config)
     return config
   },
   error => {
     // Do something with request error
     console.log(error) // for debug
-    Promise.reject(error)
+    // Promise.reject(error)
   }
 )
 

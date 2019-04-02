@@ -75,6 +75,7 @@
 import { validUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './socialsignin'
+import { setToken } from '@/utils/auth'
 
 export default {
   name: 'Login',
@@ -106,13 +107,26 @@ export default {
       passwordType: 'password',
       loading: false,
       showDialog: false,
-      redirect: undefined
+      redirect: undefined,
+      token: ''
     }
   },
   watch: {
     $route: {
       handler: function(route) {
         this.redirect = route.query && route.query.redirect
+        this.token = route.query && route.query.token
+
+        if (this.token) {
+          this.$store.dispatch('user/loginByToken', this.token)
+            .then(() => {
+              this.$router.push({ path: this.redirect || '/' })
+              this.loading = false
+            })
+            .catch(() => {
+              this.loading = false
+            })
+        }
       },
       immediate: true
     }

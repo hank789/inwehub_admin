@@ -44,15 +44,31 @@ const actions = {
     })
   },
 
+  loginByToken({ commit }, token) {
+    return new Promise((resolve, reject) => {
+      commit('SET_TOKEN', token)
+      setToken(token)
+      console.log('loginByToken', this.token)
+      resolve()
+    })
+  },
+
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
-        const { data } = response
+        let { data } = response
 
         if (!data) {
           reject('Verification failed, please Login again.')
         }
+
+        data = Object.assign({
+          roles: ['admin'],
+          introduction: 'I am a super administrator',
+          avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+          name: 'Super Admin'
+        }, data)
 
         const { roles, name, avatar, introduction } = data
 

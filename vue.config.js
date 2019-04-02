@@ -31,15 +31,15 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    proxy: {
-      '/api': {
-        target: `http://localhost:${port}/mock`,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': ''
-        }
-      }
-    },
+    // proxy: {
+    //   '/api': {
+    //     target: `http://localhost:${port}/mock`,
+    //     changeOrigin: true,
+    //     pathRewrite: {
+    //       '^/api': ''
+    //     }
+    //   }
+    // },
     after(app) {
       require('@babel/register')
       const bodyParser = require('body-parser')

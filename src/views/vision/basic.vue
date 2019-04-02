@@ -20,7 +20,7 @@
         <el-form-item label="产品名称">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="产品形式">
+        <el-form-item label="产品介绍">
           <el-input type="textarea" v-model="form.desc"></el-input>
         </el-form-item>
 

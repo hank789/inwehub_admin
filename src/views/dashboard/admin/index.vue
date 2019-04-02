@@ -23,6 +23,7 @@
 
 <script>
 import LineChart from './components/LineChart'
+import { fetchInfo } from '@/api/product'
 
 const lineChartData = {
   newVisitis: {
@@ -53,6 +54,11 @@ export default {
       lineChartData: lineChartData.newVisitis,
       activeName: ''
     }
+  },
+  created() {
+    fetchInfo().then(response => {
+      console.log(response)
+    })
   },
   methods: {
     handleSetLineChartData(type) {
