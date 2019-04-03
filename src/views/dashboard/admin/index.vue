@@ -4,45 +4,29 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>浏览情况</span>
-
-        <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-          <line-chart :chart-data="lineChartData" />
-        </el-row>
       </div>
+      <div class="totalCount">{{totalCount}}<span>浏览量(次)</span></div>
+      <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+        <line-chart :chart-data="lineChartData" />
+      </el-row>
     </el-card>
+
+
 
     <el-card class="box-card" style="margin-top:20px;">
       <div slot="header" class="clearfix">
         <span>小程序二维码</span>
-
       </div>
+      <img :src="weappCodeUrl" class="ercode"/>
     </el-card>
 
   </div>
 </template>
 
 <script>
-import LineChart from './components/LineChart'
-import { getInfo } from '@/api/product'
-
-const lineChartData = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
-  },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
-  },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
-  }
-}
+import LineChart from './components/Liulanqingkuang'
+import { getInfo, getViewData } from '@/api/product'
+import { getCurTimestamp, getSevenDayBeforeTimestamp, getThirtyDayBeforeTimestamp } from '@/utils/time'
 
 export default {
   name: 'DashboardAdmin',
@@ -51,14 +35,36 @@ export default {
   },
   data() {
     return {
-      lineChartData: lineChartData.newVisitis,
-      activeName: ''
+      lineChartData: {
+        xAxis: [],
+        data: []
+      },
+      activeName: '',
+      data: null,
+      weappCodeUrl: '',
+      totalCount: 0
     }
   },
   created() {
+
     getInfo().then(response => {
-      console.log(response)
+      this.data = response.data
+      this.weappCodeUrl = response.data.weappCodeUrl
+
+      getViewData({id: this.data.id, start_time: getSevenDayBeforeTimestamp() / 1000, end_time: getCurTimestamp() / 1000}).then(res => {
+        const list = res.data.list
+
+        this.totalCount = 0
+
+        for (var i in list) {
+          this.lineChartData.xAxis.push(list[i].ref_date)
+          this.lineChartData.data.push(list[i].value)
+          this.totalCount += list[i].value
+        }
+      })
     })
+
+
   },
   methods: {
     handleSetLineChartData(type) {
@@ -79,6 +85,28 @@ export default {
     background: #fff;
     padding: 16px 16px 0;
     margin-bottom: 32px;
+  }
+}
+
+.ercode{
+  width:139px;
+  height:139px;
+}
+
+.totalCount{
+  text-align: center;
+  font-size:26px;
+  font-family:PingFangSC-Medium;
+  font-weight:500;
+  color:rgba(74,95,123,1);
+  line-height:40px;
+
+  span{
+    font-size:14px;
+    font-family:PingFangSC-Regular;
+    font-weight:400;
+    color:rgba(124,142,166,1);
+    vertical-align: middle;
   }
 }
 </style>
