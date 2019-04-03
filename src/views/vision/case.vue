@@ -4,20 +4,22 @@
 
     <el-dialog title="添加案例" :visible.sync="dialogFormVisible">
 
-      <el-upload
-        class="avatar-uploader container-caseImg"
-        action="''"
-        :auto-upload="false"
-        :show-file-list="false"
-        list-type="picture"
-        :on-change="handlePictureCardPreview"
-        :on-remove="handleRemove"
-      >
-        <img v-if="form.dialogImageUrl" :src="form.dialogImageUrl" class="avatar">
-        <i v-else class="el-icon-plus avatar-uploader-icon" />
-      </el-upload>
-
       <el-form ref="form" :model="form" :rules="formRules" label-position="top">
+        <el-form-item label="" prop="dialogImageUrl">
+          <el-upload
+            class="avatar-uploader container-caseImg"
+            action="''"
+            :auto-upload="false"
+            :show-file-list="false"
+            list-type="picture"
+            :on-change="handlePictureCardPreview"
+            :on-remove="handleRemove"
+          >
+            <img v-if="form.dialogImageUrl" :src="form.dialogImageUrl" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon" />
+          </el-upload>
+        </el-form-item>
+
         <el-form-item label="案例名称" prop="name" :label-width="formLabelWidth">
           <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
@@ -28,25 +30,26 @@
         <el-radio v-model="radio" label="pdf">PDF文档</el-radio>
         <el-radio v-model="radio" label="image">图片</el-radio>
 
-        <el-form-item label="" :label-width="formLabelWidth">
+        <el-form-item prop="linkName" label="" :label-width="formLabelWidth">
           <el-input v-if="radio === 'link'" v-model="form.linkUrl" placeholder="输入案例链接" />
         </el-form-item>
 
-        <el-upload
-          v-if="radio === 'pdf' || radio === 'image'"
-          class="upload-demo"
-          action="''"
-          :auto-upload="false"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-remove="beforeRemove"
-          :limit="1"
-          :on-exceed="handleExceed"
-          :on-change="handleChange"
-          :file-list="fileList"
-        >
-          <el-button size="small" type="primary">点击上传</el-button>
-        </el-upload>
+        <el-form-item v-if="radio === 'pdf' || radio === 'image'" label="">
+          <el-upload
+            class="upload-demo"
+            action="''"
+            :auto-upload="false"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :before-remove="beforeRemove"
+            :limit="1"
+            :on-exceed="handleExceed"
+            :on-change="handleChange"
+            :file-list="fileList"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+          </el-upload>
+        </el-form-item>
 
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -125,11 +128,9 @@ export default {
         imageUrl: ''
       },
       formRules: {
-        name: [
-          { required: true, trigger: 'blur', message: '请输入产品名称' }
-        ],
-        desc: [{ required: true, trigger: 'blur', message: '请输入产品介绍' }],
-        imageUrl: [{ required: true, trigger: 'blur', message: '请上传介绍图' }]
+        name: [{ required: true, trigger: 'blur', message: '请输入案例名称' }],
+        desc: [{ required: true, trigger: 'blur', message: '请输入案例介绍' }],
+        dialogImageUrl: [{ required: true, trigger: 'blur', message: '请上传封面图' }]
       },
       formLabelWidth: '120px',
       list: null,
@@ -147,7 +148,8 @@ export default {
       fileList: [],
       showFileList: false,
       dialogVisible: false,
-      imageName: ''
+      imageName: '',
+      id: ''
     }
   },
   watch: {
@@ -159,7 +161,12 @@ export default {
   created() {
     this.getList()
   },
+  mounted() {
+  },
   methods: {
+    getProductId() {
+
+    },
     handleChange(file, fileList) {
       fileToBase64(file, (base64) => {
         this.form.imageUrl = base64
@@ -195,27 +202,61 @@ export default {
       return isJPG && isLt2M
     },
     submitCase() {
-      var file = ''
-      if (this.radio === 'image') {
-        file = this.form.imageUrl
-      } else if (this.radio === 'pdf') {
-        file = {
-          'name': this.imageName,
-          'base64': this.form.imageUrl
+      this.$refs.form.validate(valid => {
+        if (this.radio === 'link' && !this.form.linkUrl) {
+          this.$message({
+            message: '请填写链接地址',
+            type: 'error'
+          })
+          return false
+        } else if (this.radio === 'image' && !this.form.imageUrl) {
+          this.$message({
+            message: '请上传案例图片',
+            type: 'error'
+          })
+          return false
         }
-      }
-      storeCase({
-        id: 206,
-        title: this.form.name,
-        desc: this.form.desc,
-        cover_pic: this.form.dialogImageUrl,
-        type: this.radio,
-        file: file,
-        link_url: this.form.linkUrl
-      }).then(res => {
+        if (this.radio === 'pdf' && !this.form.imageUrl) {
+          this.$message({
+            message: '请上传pdf文件',
+            type: 'error'
+          })
+          return false
+        }
 
+        if (valid) {
+          var file = ''
+          if (this.radio === 'image') {
+            file = this.form.imageUrl
+          } else if (this.radio === 'pdf') {
+            file = {
+              'name': this.imageName,
+              'base64': this.form.imageUrl
+            }
+          }
+          storeCase({
+            id: 206,
+            title: this.form.name,
+            desc: this.form.desc,
+            cover_pic: this.form.dialogImageUrl,
+            type: this.radio,
+            file: file,
+            link_url: this.form.linkUrl
+          }).then(res => {
+            this.$message({
+              message: '提交成功',
+              type: 'success'
+            })
+            this.dialogFormVisible = false
+          })
+        } else {
+          this.$message({
+            message: '请正确填写表单',
+            type: 'error'
+          })
+          return false
+        }
       })
-      console.log('submit!')
     },
     getList() {
       this.listLoading = true
