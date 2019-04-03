@@ -18,7 +18,7 @@
         <i v-else class="el-icon-plus avatar-uploader-icon" />
       </el-upload>
 
-      <el-form ref="form" :model="form" label-width="100px">
+      <el-form ref="form" :model="form" label-width="100px" label-position="top">
         <el-form-item label="产品名称">
           <el-input v-model="form.name" />
         </el-form-item>
