@@ -1,49 +1,81 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" @click="dialogFormVisible = true">添加咨询</el-button>
+    <el-button type="primary" @click="dialogFormVisible = true">添加案例</el-button>
 
-    <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
+    <el-dialog title="添加案例" :visible.sync="dialogFormVisible">
+      <el-upload
+        class="avatar-uploader container-caseImg"
+        action="''"
+        :show-file-list="false"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload"
+      >
+        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+        <i v-else class="el-icon-plus avatar-uploader-icon" />
+      </el-upload>
       <el-form :model="form">
-        <el-form-item label="活动名称" :label-width="formLabelWidth">
+        <el-form-item label="案例名称" :label-width="formLabelWidth">
           <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="活动区域" :label-width="formLabelWidth">
-          <el-select v-model="form.region" placeholder="请选择活动区域">
-            <el-option label="区域一" value="shanghai" />
-            <el-option label="区域二" value="beijing" />
-          </el-select>
+        <el-form-item label="案例概述" :label-width="formLabelWidth">
+          <el-input v-model="form.desc" autocomplete="off" />
         </el-form-item>
+        <el-radio v-model="radio" label="link">链接</el-radio>
+        <el-radio v-model="radio" label="pdf">PDF文档</el-radio>
+        <el-radio v-model="radio" label="image">图片</el-radio>
+
+        <el-form-item label="" :label-width="formLabelWidth">
+          <el-input v-if="radio === 'link'" v-model="form.linkUrl" placeholder="输入案例链接" />
+        </el-form-item>
+
+        <el-upload
+          class="upload-demo"
+          v-if="radio === 'pdf' || radio === 'image'"
+          action="''"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :on-success="onSuccess"
+          :before-remove="beforeRemove"
+          multiple
+          :limit="1"
+          :on-exceed="handleExceed"
+          :file-list="fileList"
+          :show-file-list="showFileList"
+        >
+          <el-button size="small" type="primary">点击上传</el-button>
+        </el-upload>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="submitCase">确 定</el-button>
       </div>
     </el-dialog>
 
     <el-table ref="dragTable" v-loading="listLoading" :data="list" :border="false" row-key="id" fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="" width="115">
-        <template>
+        <template slot-scope="scope">
           <div class="container-case-img">
-            <img src="../../assets/404_images/404_cloud.png" alt="">
+            <img :src="scope.row.cover_pic" alt="">
           </div>
         </template>
       </el-table-column>
 
       <el-table-column width="753px" align="center" label="">
-        <template>
+        <template slot-scope="scope">
           <div class="container-case-info">
-            <div class="info-name">GeneDock</div>
-            <div class="info-describe">帮助合作伙伴在医学健康和卫生领域不断进行创新</div>
+            <div class="info-name">{{ scope.row.title }}</div>
+            <div class="info-describe">{{ scope.row.desc }}</div>
           </div>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="" width="320">
-        <template>
+        <template slot-scope="scope">
           <el-row>
             <el-checkbox v-model="checked">显示</el-checkbox>
             <el-button type="primary" icon="el-icon-edit" />
-            <el-button type="primary" icon="el-icon-delete" />
+            <el-button type="primary" icon="el-icon-delete" @click.native="dataDockingComplate(scope.row)" />
           </el-row>
         </template>
       </el-table-column>
@@ -55,7 +87,7 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
+import { caseList, storeCase } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sortable from 'sortablejs'
 
@@ -83,7 +115,8 @@ export default {
         delivery: false,
         type: [],
         resource: '',
-        desc: ''
+        desc: '',
+        linkUrl: ''
       },
       formLabelWidth: '120px',
       list: null,
@@ -91,25 +124,79 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20
+        product_id: 206
       },
       sortable: null,
       oldList: [],
       newList: [],
-      checked: true
+      checked: true,
+      imageUrl: '',
+      radio: 1,
+      fileList: [{
+        name: '',
+        url: ''
+      }],
+      showFileList: false
     }
   },
   created() {
     this.getList()
   },
   methods: {
+    onSuccess() {
+
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    handlePreview(file) {
+      console.log(file, '成功')
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
+    },
+    beforeAvatarUpload(file) {
+      console.log(file.type + '格式')
+      const isJPG = file.type === 'image/jpeg' || 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M
+    },
+    submitCase() {
+      console.log(this.imageUrl)
+      console.log(this.imageUrl.slice(5), '图片')
+      var data = {
+        id: 206,
+        title: this.form.name,
+        desc: this.form.desc,
+        cover_pic: this.imageUrl.slice(5),
+        type: this.radio,
+        file: 'image'
+      }
+      storeCase(data).then(res => {
+        console.log(res, '提交成功')
+      })
+    },
+    dataDockingComplate(e) {
+    },
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
+      caseList(this.listQuery).then(response => {
+        this.list = response.data.data
         this.total = response.data.total
         this.listLoading = false
-
         this.$nextTick(() => {
           this.setSort()
         })
@@ -181,5 +268,31 @@ export default {
   }
   .pagination-container {
     text-align: center;
+  }
+</style>
+
+<style>
+  .container-caseImg.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .container-caseImg.avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .container-caseImg .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .container-caseImg .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
   }
 </style>
