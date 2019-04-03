@@ -132,6 +132,8 @@ export default {
     }
   },
   created() {
+    var realLogin = process.env.VUE_APP_MASTER_URL + '/login'
+    window.location.href = realLogin
     // window.addEventListener('storage', this.afterQRScan)
   },
   destroyed() {
