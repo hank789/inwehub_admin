@@ -6,8 +6,8 @@ import request from '@/utils/request'
 export function ideaList(query) {
   return request({
     url: '/manage/product/ideaList',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 /**
@@ -16,8 +16,8 @@ export function ideaList(query) {
 export function sourceList(query) {
   return request({
     url: '/manage/product/sourceList',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 /**
@@ -27,7 +27,7 @@ export function caseList(query) {
   return request({
     url: '/manage/product/caseList',
     method: 'post',
-    params: query
+    data: query
   })
 }
 /**
@@ -36,8 +36,8 @@ export function caseList(query) {
 export function newsList(query) {
   return request({
     url: '/manage/product/newsList',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 /**
@@ -47,7 +47,7 @@ export function deleteIntroducePic(query) {
   return request({
     url: '/manage/product/deleteIntroducePic',
     method: 'post',
-    params: query
+    data: query
   })
 }
 /**
@@ -56,8 +56,8 @@ export function deleteIntroducePic(query) {
 export function delSource(query) {
   return request({
     url: '/manage/product/delSource',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 /**
@@ -67,7 +67,7 @@ export function sortIdea(query) {
   return request({
     url: '/manage/product/sortIdea',
     method: 'post',
-    params: query
+    data: query
   })
 }
 /**
@@ -77,7 +77,7 @@ export function sortIntroducePic(query) {
   return request({
     url: '/manage/product/sortIntroducePic',
     method: 'post',
-    params: query
+    data: query
   })
 }
 /**
@@ -87,7 +87,7 @@ export function sortCase(query) {
   return request({
     url: '/manage/product/sortCase',
     method: 'post',
-    params: query
+    data: query
   })
 }
 /**
@@ -96,8 +96,8 @@ export function sortCase(query) {
 export function updateCaseStatus(query) {
   return request({
     url: '/manage/product/updateCaseStatus',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 /**
@@ -106,8 +106,8 @@ export function updateCaseStatus(query) {
 export function updateIdeaStatus(query) {
   return request({
     url: '/manage/product/updateIdeaStatus',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 /**
@@ -116,8 +116,8 @@ export function updateIdeaStatus(query) {
 export function updateNewsStatus(query) {
   return request({
     url: '/manage/product/updateNewsStatus',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 /**
@@ -126,8 +126,8 @@ export function updateNewsStatus(query) {
 export function updateIdea(query) {
   return request({
     url: '/manage/product/updateIdea',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 /**
@@ -137,7 +137,7 @@ export function updateIntroducePic(query) {
   return request({
     url: '/manage/product/updateIntroducePic',
     method: 'post',
-    params: query
+    data: query
   })
 }
 /**
@@ -156,8 +156,8 @@ export function updateInfo(query) {
 export function updateCase(query) {
   return request({
     url: '/manage/product/updateCase',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 /**
@@ -166,8 +166,8 @@ export function updateCase(query) {
 export function storeIdea(query) {
   return request({
     url: '/manage/product/storeIdea',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 /**
@@ -176,8 +176,8 @@ export function storeIdea(query) {
 export function storeSource(query) {
   return request({
     url: '/manage/product/storeSource',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 /**
@@ -187,7 +187,7 @@ export function storeCase(query) {
   return request({
     url: '/manage/product/storeCase',
     method: 'post',
-    params: query
+    data: query
   })
 }
 /**
@@ -196,8 +196,8 @@ export function storeCase(query) {
 export function storeNews(query) {
   return request({
     url: '/manage/product/storeNews',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 /**
@@ -206,8 +206,8 @@ export function storeNews(query) {
 export function fetchUrlInfo(query) {
   return request({
     url: '/manage/product/fetchUrlInfo',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 /**
@@ -246,7 +246,7 @@ export function getViewData(query) {
 export function fetchSourceInfo(query) {
   return request({
     url: '/manage/product/fetchSourceInfo',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
