@@ -18,8 +18,8 @@
       </el-upload>
 
 
-      <el-form ref="form" :model="form" label-width="100px">
-        <el-form-item label="产品名称">
+      <el-form ref="form" :model="form" label-width="100px" label-position="top">
+        <el-form-item label="产品名称" >
           <el-input v-model="form.name"></el-input>
         </el-form-item>
         <el-form-item label="产品介绍">
