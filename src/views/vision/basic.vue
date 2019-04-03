@@ -29,9 +29,10 @@
         <el-form-item label="上传介绍图">
           <el-upload
             class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="''"
+            :auto-upload="false"
             :show-file-list="false"
-            :on-success="handleAvatarSuccess"
+            :on-change="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload">
             <img v-if="imageUrl" :src="imageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -91,8 +92,10 @@
         })
         console.log('submit!');
       },
-      handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+      handleAvatarSuccess(file) {
+        fileToBase64(file, (base64) => {
+          this.imageUrl = base64
+        })
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
