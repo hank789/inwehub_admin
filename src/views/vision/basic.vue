@@ -6,15 +6,17 @@
       </div>
 
       <el-upload
-        action="https://jsonplaceholder.typicode.com/posts/"
-        list-type="picture-card"
-        :on-preview="handlePictureCardPreview"
+        class="avatar-uploader"
+        action="''"
+        :auto-upload="false"
+        :show-file-list="false"
+        list-type="picture"
+        :on-change="handlePictureCardPreview"
         :on-remove="handleRemove">
-        <i class="el-icon-plus"></i>
+        <img v-if="dialogImageUrl" :src="dialogImageUrl" class="avatar">
+        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
       </el-upload>
-      <el-dialog :visible.sync="dialogVisible">
-        <img width="100%" :src="dialogImageUrl" alt="">
-      </el-dialog>
+
 
       <el-form ref="form" :model="form" label-width="100px">
         <el-form-item label="产品名称">
@@ -27,9 +29,10 @@
         <el-form-item label="上传介绍图">
           <el-upload
             class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="''"
+            :auto-upload="false"
             :show-file-list="false"
-            :on-success="handleAvatarSuccess"
+            :on-change="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload">
             <img v-if="imageUrl" :src="imageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -45,9 +48,13 @@
 </template>
 
 <script>
+  import { getInfo, updateInfo } from '@/api/product'
+  import { fileToBase64 } from '@/utils/image'
+
   export default {
     data() {
       return {
+        id: null,
         form: {
           name: '',
           region: '',
@@ -63,12 +70,32 @@
         dialogVisible: false
       }
     },
+    created() {
+      getInfo().then(response => {
+        this.dialogImageUrl = response.data.log
+        this.id = response.data.id
+        this.form.name = response.data.name
+        this.form.desc = response.data.summary
+        this.imageUrl = response.data.cover_pic
+      })
+    },
     methods: {
       onSubmit() {
+        updateInfo({
+          id: this.id,
+          name: this.form.name,
+          logo: this.dialogImageUrl,
+          summary: this.form.desc,
+          cover_pic: this.imageUrl
+        }).then(res => {
+
+        })
         console.log('submit!');
       },
-      handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+      handleAvatarSuccess(file) {
+        fileToBase64(file, (base64) => {
+          this.imageUrl = base64
+        })
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
@@ -86,8 +113,10 @@
         console.log(file, fileList);
       },
       handlePictureCardPreview(file) {
-        this.dialogImageUrl = file.url;
-        this.dialogVisible = true;
+        fileToBase64(file, (base64) => {
+          this.dialogImageUrl = base64
+          this.dialogVisible = true
+        })
       }
     }
   }
