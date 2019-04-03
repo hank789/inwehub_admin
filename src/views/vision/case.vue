@@ -3,16 +3,20 @@
     <el-button type="primary" @click="dialogFormVisible = true">添加案例</el-button>
 
     <el-dialog title="添加案例" :visible.sync="dialogFormVisible">
+
       <el-upload
         class="avatar-uploader container-caseImg"
         action="''"
+        :auto-upload="false"
         :show-file-list="false"
-        :on-success="handleAvatarSuccess"
-        :before-upload="beforeAvatarUpload"
+        list-type="picture"
+        :on-change="handlePictureCardPreview"
+        :on-remove="handleRemove"
       >
-        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+        <img v-if="dialogImageUrl" :src="dialogImageUrl" class="avatar">
         <i v-else class="el-icon-plus avatar-uploader-icon" />
       </el-upload>
+
       <el-form :model="form">
         <el-form-item label="案例名称" :label-width="formLabelWidth">
           <el-input v-model="form.name" autocomplete="off" />
@@ -29,18 +33,12 @@
         </el-form-item>
 
         <el-upload
-          class="upload-demo"
           v-if="radio === 'pdf' || radio === 'image'"
+          class="upload-demo"
           action="''"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :on-success="onSuccess"
-          :before-remove="beforeRemove"
-          multiple
-          :limit="1"
-          :on-exceed="handleExceed"
+          :auto-upload="false"
+          :on-change="handleChange"
           :file-list="fileList"
-          :show-file-list="showFileList"
         >
           <el-button size="small" type="primary">点击上传</el-button>
         </el-upload>
@@ -90,6 +88,7 @@
 import { caseList, storeCase } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sortable from 'sortablejs'
+import { fileToBase64 } from '@/utils/image'
 
 export default {
   name: 'ArticleList',
@@ -130,36 +129,27 @@ export default {
       oldList: [],
       newList: [],
       checked: true,
-      imageUrl: '',
+      dialogImageUrl: '',
       radio: 1,
       fileList: [{
         name: '',
         url: ''
       }],
-      showFileList: false
+      showFileList: false,
+      dialogVisible: false
     }
   },
   created() {
     this.getList()
   },
   methods: {
-    onSuccess() {
-
+    handleChange(file, fileList) {
+      this.fileList = fileList.slice(-3)
     },
+
+    // shangtu
     handleRemove(file, fileList) {
       console.log(file, fileList)
-    },
-    handlePreview(file) {
-      console.log(file, '成功')
-    },
-    handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`)
-    },
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw)
     },
     beforeAvatarUpload(file) {
       console.log(file.type + '格式')
@@ -175,21 +165,18 @@ export default {
       return isJPG && isLt2M
     },
     submitCase() {
-      console.log(this.imageUrl)
-      console.log(this.imageUrl.slice(5), '图片')
-      var data = {
+      storeCase({
         id: 206,
         title: this.form.name,
         desc: this.form.desc,
-        cover_pic: this.imageUrl.slice(5),
+        cover_pic: this.dialogImageUrl,
         type: this.radio,
-        file: 'image'
-      }
-      storeCase(data).then(res => {
-        console.log(res, '提交成功')
+        file: '',
+        link_url: this.form.linkUrl
+      }).then(res => {
+
       })
-    },
-    dataDockingComplate(e) {
+      console.log('submit!')
     },
     getList() {
       this.listLoading = true
@@ -226,6 +213,12 @@ export default {
           const tempIndex = this.newList.splice(evt.oldIndex, 1)[0]
           this.newList.splice(evt.newIndex, 0, tempIndex)
         }
+      })
+    },
+    handlePictureCardPreview(file) {
+      fileToBase64(file, (base64) => {
+        this.dialogImageUrl = base64
+        this.dialogVisible = true
       })
     }
   }
