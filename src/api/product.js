@@ -147,7 +147,7 @@ export function updateInfo(query) {
   return request({
     url: '/manage/product/updateInfo',
     method: 'post',
-    params: query
+    data: query
   })
 }
 /**
