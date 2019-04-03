@@ -18,15 +18,15 @@
         <i v-else class="el-icon-plus avatar-uploader-icon" />
       </el-upload>
 
-      <el-form ref="form" :model="form" label-width="100px" label-position="top">
-        <el-form-item label="产品名称">
-          <el-input v-model="form.name" />
+      <el-form ref="ruleForm" :model="form" :rules="formRules" label-width="100px" label-position="top">
+        <el-form-item label="产品名称" prop="name">
+          <el-input v-model="form.name" name="name" placeholder="输入产品名称"/>
         </el-form-item>
-        <el-form-item label="产品介绍">
-          <el-input v-model="form.desc" type="textarea" />
+        <el-form-item label="产品介绍" prop="desc">
+          <el-input v-model="form.desc" name="desc" type="textarea" size="medium" class="textareaInput" placeholder="输入产品详细介绍"/>
         </el-form-item>
 
-        <el-form-item label="上传介绍图">
+        <el-form-item label="上传介绍图" prop="imageUrl">
           <el-upload
             class="avatar-uploader"
             action="''"
@@ -35,7 +35,7 @@
             :on-change="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
           >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon" />
           </el-upload>
         </el-form-item>
@@ -58,17 +58,17 @@ export default {
       id: null,
       form: {
         name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+        desc: '',
+        imageUrl: ''
       },
-      imageUrl: '',
-      dialogImageUrl: '',
-      dialogVisible: false
+      formRules: {
+        name: [
+          { required: true, trigger: 'blur', message: '请输入产品名称'}
+        ],
+        desc: [{ required: true, trigger: 'blur', message: '请输入产品介绍' }],
+        imageUrl: [{ required: true, trigger: 'blur', message: '请上传介绍图' }],
+      },
+      dialogImageUrl: ''
     }
   },
   created() {
@@ -77,25 +77,37 @@ export default {
       this.id = response.data.id
       this.form.name = response.data.name
       this.form.desc = response.data.summary
-      this.imageUrl = response.data.cover_pic
+      this.form.imageUrl = response.data.cover_pic
     })
   },
   methods: {
     onSubmit() {
-      updateInfo({
-        id: this.id,
-        name: this.form.name,
-        logo: this.dialogImageUrl,
-        summary: this.form.desc,
-        cover_pic: this.imageUrl
-      }).then(res => {
-
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          updateInfo({
+            id: this.id,
+            name: this.form.name,
+            logo: this.dialogImageUrl,
+            summary: this.form.desc,
+            cover_pic: this.form.imageUrl
+          }).then(res => {
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            })
+          })
+        } else {
+          this.$message({
+            message: '请正确填写表单',
+            type: 'error'
+          })
+          return false
+        }
       })
-      console.log('submit!')
     },
     handleAvatarSuccess(file) {
       fileToBase64(file, (base64) => {
-        this.imageUrl = base64
+        this.form.imageUrl = base64
       })
     },
     beforeAvatarUpload(file) {
@@ -116,7 +128,6 @@ export default {
     handlePictureCardPreview(file) {
       fileToBase64(file, (base64) => {
         this.dialogImageUrl = base64
-        this.dialogVisible = true
       })
     }
   }
@@ -146,5 +157,13 @@ export default {
     width: 178px;
     height: 178px;
     display: block;
+  }
+</style>
+
+<style lang="scss">
+  .textareaInput{
+    textarea{
+      height:120px;
+    }
   }
 </style>
