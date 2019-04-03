@@ -18,15 +18,15 @@
         <i v-else class="el-icon-plus avatar-uploader-icon" />
       </el-upload>
 
-      <el-form ref="form" :model="form" label-width="100px" label-position="top">
-        <el-form-item label="产品名称">
-          <el-input v-model="form.name" />
+      <el-form ref="ruleForm" :model="form" :rules="formRules" label-width="100px" label-position="top">
+        <el-form-item label="产品名称" prop="name">
+          <el-input v-model="form.name" name="name" placeholder="输入产品名称"/>
         </el-form-item>
-        <el-form-item label="产品介绍">
-          <el-input v-model="form.desc" type="textarea" />
+        <el-form-item label="产品介绍" prop="desc">
+          <el-input v-model="form.desc" name="desc" type="textarea" size="medium" class="textareaInput" placeholder="输入产品详细介绍"/>
         </el-form-item>
 
-        <el-form-item label="上传介绍图">
+        <el-form-item label="上传介绍图" prop="imageUrl">
           <el-upload
             class="avatar-uploader"
             action="''"
@@ -58,17 +58,18 @@ export default {
       id: null,
       form: {
         name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
         desc: ''
       },
+      formRules: {
+        name: [
+          { required: true, trigger: 'blur', message: '请输入产品名称'},
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+        desc: [{ required: true, trigger: 'blur', message: '请输入产品介绍' }],
+        imageUrl: [{ required: true, trigger: 'blur', message: '请上传介绍图' }],
+      },
       imageUrl: '',
-      dialogImageUrl: '',
-      dialogVisible: false
+      dialogImageUrl: ''
     }
   },
   created() {
@@ -82,16 +83,24 @@ export default {
   },
   methods: {
     onSubmit() {
-      updateInfo({
-        id: this.id,
-        name: this.form.name,
-        logo: this.dialogImageUrl,
-        summary: this.form.desc,
-        cover_pic: this.imageUrl
-      }).then(res => {
-
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          updateInfo({
+            id: this.id,
+            name: this.form.name,
+            logo: this.dialogImageUrl,
+            summary: this.form.desc,
+            cover_pic: this.imageUrl
+          }).then(res => {
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            })
+          })
+        } else {
+          return false
+        }
       })
-      console.log('submit!')
     },
     handleAvatarSuccess(file) {
       fileToBase64(file, (base64) => {
@@ -116,7 +125,6 @@ export default {
     handlePictureCardPreview(file) {
       fileToBase64(file, (base64) => {
         this.dialogImageUrl = base64
-        this.dialogVisible = true
       })
     }
   }
@@ -146,5 +154,13 @@ export default {
     width: 178px;
     height: 178px;
     display: block;
+  }
+</style>
+
+<style lang="scss">
+  .textareaInput{
+    textarea{
+      height:120px;
+    }
   }
 </style>
