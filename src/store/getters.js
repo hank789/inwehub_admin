@@ -12,7 +12,6 @@ const getters = {
   roles: state => state.user.roles,
   permission_routes: state => state.permission.routes,
   addRoutes: state => state.permission.addRoutes,
-  errorLogs: state => state.errorLog.logs,
-  productId: state => state.product.id
+  errorLogs: state => state.errorLog.logs
 }
 export default getters
