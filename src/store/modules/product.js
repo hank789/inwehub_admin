@@ -1,30 +1,30 @@
 import { getInfo } from '@/api/product'
 
 const state = {
-  id: ''
+  product: null
 }
 
 const mutations = {
-  SET_ID: (state, id) => {
-    state.id = id
+  SET_PRODUCT: (state, product) => {
+    state.product = product
   }
 }
 
 const actions = {
-  setId({ commit }, id) {
+  setProduct({ commit }, product) {
     return new Promise((resolve, reject) => {
-      commit('SET_ID', id)
+      commit('SET_PRODUCT', product)
       resolve()
     })
   },
-  getProductId({ commit, state }) {
+  getProductInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      if (state.id) {
-        resolve(state.id)
+      if (state.product) {
+        resolve(state.product)
       } else {
         getInfo().then(response => {
-          commit('SET_ID', response.data.id)
-          resolve(response.data.id)
+          commit('SET_PRODUCT', response.data)
+          resolve(response.data)
         }).catch(error => {
           reject(error)
         })
