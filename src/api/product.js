@@ -186,7 +186,7 @@ export function storeSource(query) {
 export function storeCase(query) {
   return request({
     url: '/manage/product/storeCase',
-    method: 'get',
+    method: 'post',
     params: query
   })
 }
