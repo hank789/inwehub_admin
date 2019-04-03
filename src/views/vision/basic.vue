@@ -35,7 +35,7 @@
             :on-change="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
           >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon" />
           </el-upload>
         </el-form-item>
@@ -58,17 +58,16 @@ export default {
       id: null,
       form: {
         name: '',
-        desc: ''
+        desc: '',
+        imageUrl: ''
       },
       formRules: {
         name: [
-          { required: true, trigger: 'blur', message: '请输入产品名称'},
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, trigger: 'blur', message: '请输入产品名称'}
         ],
         desc: [{ required: true, trigger: 'blur', message: '请输入产品介绍' }],
         imageUrl: [{ required: true, trigger: 'blur', message: '请上传介绍图' }],
       },
-      imageUrl: '',
       dialogImageUrl: ''
     }
   },
@@ -78,7 +77,7 @@ export default {
       this.id = response.data.id
       this.form.name = response.data.name
       this.form.desc = response.data.summary
-      this.imageUrl = response.data.cover_pic
+      this.form.imageUrl = response.data.cover_pic
     })
   },
   methods: {
@@ -90,7 +89,7 @@ export default {
             name: this.form.name,
             logo: this.dialogImageUrl,
             summary: this.form.desc,
-            cover_pic: this.imageUrl
+            cover_pic: this.form.imageUrl
           }).then(res => {
             this.$message({
               message: '操作成功',
@@ -98,13 +97,17 @@ export default {
             })
           })
         } else {
+          this.$message({
+            message: '请正确填写表单',
+            type: 'error'
+          })
           return false
         }
       })
     },
     handleAvatarSuccess(file) {
       fileToBase64(file, (base64) => {
-        this.imageUrl = base64
+        this.form.imageUrl = base64
       })
     },
     beforeAvatarUpload(file) {
