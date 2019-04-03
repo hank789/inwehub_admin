@@ -13,15 +13,15 @@
         :on-change="handlePictureCardPreview"
         :on-remove="handleRemove"
       >
-        <img v-if="dialogImageUrl" :src="dialogImageUrl" class="avatar">
+        <img v-if="form.dialogImageUrl" :src="form.dialogImageUrl" class="avatar">
         <i v-else class="el-icon-plus avatar-uploader-icon" />
       </el-upload>
 
-      <el-form :model="form">
-        <el-form-item label="案例名称" :label-width="formLabelWidth">
+      <el-form ref="form" :model="form" :rules="formRules" label-position="top">
+        <el-form-item label="案例名称" prop="name" :label-width="formLabelWidth">
           <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="案例概述" :label-width="formLabelWidth">
+        <el-form-item label="案例概述" prop="desc" :label-width="formLabelWidth">
           <el-input v-model="form.desc" autocomplete="off" />
         </el-form-item>
         <el-radio v-model="radio" label="link">链接</el-radio>
@@ -37,6 +37,11 @@
           class="upload-demo"
           action="''"
           :auto-upload="false"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :before-remove="beforeRemove"
+          :limit="1"
+          :on-exceed="handleExceed"
           :on-change="handleChange"
           :file-list="fileList"
         >
@@ -115,7 +120,16 @@ export default {
         type: [],
         resource: '',
         desc: '',
-        linkUrl: ''
+        linkUrl: '',
+        dialogImageUrl: '',
+        imageUrl: ''
+      },
+      formRules: {
+        name: [
+          { required: true, trigger: 'blur', message: '请输入产品名称' }
+        ],
+        desc: [{ required: true, trigger: 'blur', message: '请输入产品介绍' }],
+        imageUrl: [{ required: true, trigger: 'blur', message: '请上传介绍图' }]
       },
       formLabelWidth: '120px',
       list: null,
@@ -129,14 +143,17 @@ export default {
       oldList: [],
       newList: [],
       checked: true,
-      dialogImageUrl: '',
-      radio: 1,
-      fileList: [{
-        name: '',
-        url: ''
-      }],
+      radio: 'link',
+      fileList: [],
       showFileList: false,
-      dialogVisible: false
+      dialogVisible: false,
+      imageName: ''
+    }
+  },
+  watch: {
+    'radio'() {
+      this.fileList = []
+      this.form.linkUrl = ''
     }
   },
   created() {
@@ -144,13 +161,26 @@ export default {
   },
   methods: {
     handleChange(file, fileList) {
-      this.fileList = fileList.slice(-3)
+      fileToBase64(file, (base64) => {
+        this.form.imageUrl = base64
+        this.imageName = file.name
+      })
     },
-
-    // shangtu
     handleRemove(file, fileList) {
       console.log(file, fileList)
     },
+    handlePreview(file) {
+      console.log(file)
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
+    handleExceed(files, fileList) {
+      console.log(fileList, '当前限制选择')
+      this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+
+    // shangtu
     beforeAvatarUpload(file) {
       console.log(file.type + '格式')
       const isJPG = file.type === 'image/jpeg' || 'image/png'
@@ -165,13 +195,22 @@ export default {
       return isJPG && isLt2M
     },
     submitCase() {
+      var file = ''
+      if (this.radio === 'image') {
+        file = this.form.imageUrl
+      } else if (this.radio === 'pdf') {
+        file = {
+          'name': this.imageName,
+          'base64': this.form.imageUrl
+        }
+      }
       storeCase({
         id: 206,
         title: this.form.name,
         desc: this.form.desc,
-        cover_pic: this.dialogImageUrl,
+        cover_pic: this.form.dialogImageUrl,
         type: this.radio,
-        file: '',
+        file: file,
         link_url: this.form.linkUrl
       }).then(res => {
 
@@ -217,7 +256,7 @@ export default {
     },
     handlePictureCardPreview(file) {
       fileToBase64(file, (base64) => {
-        this.dialogImageUrl = base64
+        this.form.dialogImageUrl = base64
         this.dialogVisible = true
       })
     }
