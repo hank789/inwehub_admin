@@ -6,7 +6,6 @@
         <h3 class="title">
           {{ $t('login.title') }}
         </h3>
-        <lang-select class="set-language" />
       </div>
 
       <el-form-item prop="username">
@@ -42,32 +41,7 @@
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
         {{ $t('login.logIn') }}
       </el-button>
-
-      <div style="position:relative">
-        <div class="tips">
-          <span>{{ $t('login.username') }} : admin</span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
-        </div>
-        <div class="tips">
-          <span style="margin-right:18px;">
-            {{ $t('login.username') }} : editor
-          </span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
-        </div>
-
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
-          {{ $t('login.thirdparty') }}
-        </el-button>
-      </div>
     </el-form>
-
-    <el-dialog :title="$t('login.thirdparty')" :visible.sync="showDialog">
-      {{ $t('login.thirdpartyTips') }}
-      <br>
-      <br>
-      <br>
-      <social-sign />
-    </el-dialog>
   </div>
 </template>
 
@@ -83,22 +57,22 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error('请输入正确的手机号'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('密码不能小于6位'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '1111111'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -132,8 +106,8 @@ export default {
     }
   },
   created() {
-    var realLogin = process.env.VUE_APP_MASTER_URL + '/login'
-    window.location.href = realLogin
+//    var realLogin = process.env.VUE_APP_MASTER_URL + '/login'
+//    window.location.href = realLogin
     // window.addEventListener('storage', this.afterQRScan)
   },
   destroyed() {

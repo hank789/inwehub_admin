@@ -1,7 +1,7 @@
 
 const tokens = {
   admin: {
-    token: 'admin-token'
+    token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjQsImlzcyI6Imh0dHBzOi8vYXBpLnl3aHViLmNvbS9hcGkvYXV0aC9sb2dpbiIsImlhdCI6MTU1NDIwMjg5NSwiZXhwIjoxNTU1NDEyNDk1LCJuYmYiOjE1NTQyMDI4OTUsImp0aSI6IkhwREhEUFJTTUhvOVdIeDcifQ.YVCeAJJaZDLUlk7MpcT0TjlRhwS0HE3oCYiUfxJ1Ws8'
   },
   editor: {
     token: 'editor-token'
