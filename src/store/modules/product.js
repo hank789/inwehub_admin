@@ -12,6 +12,12 @@ const mutations = {
 }
 
 const actions = {
+  clear({ commit }) {
+    return new Promise((resolve, reject) => {
+      commit('SET_PRODUCT', null)
+      resolve()
+    })
+  },
   setProduct({ commit }, product) {
     return new Promise((resolve, reject) => {
       commit('SET_PRODUCT', product)
@@ -28,7 +34,6 @@ const actions = {
             message: response.message,
             type: 'error'
           })
-
           this.dispatch('user/logout')
 
           setTimeout(() => {
