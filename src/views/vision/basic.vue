@@ -72,7 +72,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('product/getProductInfo').then((product) => {
+    this.$store.dispatch('product/getProductInfo', (product) => {
       this.dialogImageUrl = product.log
       this.id = product.id
       this.form.name = product.name
