@@ -1,3 +1,4 @@
+<!--suppress ALL -->
 <template>
   <div class="app-container">
     <el-button type="primary" @click="dialogFormVisible = true">添加案例</el-button>
@@ -53,7 +54,7 @@
 
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="cancel">取 消</el-button>
         <el-button type="primary" @click="submitCase">确 定</el-button>
       </div>
     </el-dialog>
@@ -79,8 +80,8 @@
       <el-table-column align="center" label="" width="320">
         <template slot-scope="scope">
           <el-row>
-            <el-checkbox v-model="scope.row.status" :trueLabel="1" :falseLabel="0" @change="selectTrigger(scope.row, 1)">{{ scope.row.status? '显示' : '隐藏' }}</el-checkbox>
-            <el-button type="primary" icon="el-icon-edit" />
+            <el-checkbox v-model="scope.row.status" :true-label="1" :false-label="0" @change="selectTrigger(scope.row, 1)">{{ scope.row.status? '显示' : '隐藏' }}</el-checkbox>
+            <el-button type="primary" icon="el-icon-edit" @click="editCase(scope.row)" />
             <el-button type="primary" icon="el-icon-delete" @click="selectTrigger(scope.row, 2)" />
           </el-row>
         </template>
@@ -93,7 +94,7 @@
 </template>
 
 <script>
-import { caseList, storeCase, updateCaseStatus } from '@/api/product'
+import { caseList, storeCase, updateCaseStatus, updateCase } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sortable from 'sortablejs'
 import { fileToBase64 } from '@/utils/image'
@@ -142,7 +143,9 @@ export default {
       fileList: [],
       showFileList: false,
       dialogVisible: false,
-      imageName: ''
+      imageName: '',
+      upDate: false,
+      caseId: ''
     }
   },
   watch: {
@@ -161,6 +164,32 @@ export default {
   mounted() {
   },
   methods: {
+    emptyForm() {
+      this.form = {
+        name: '',
+        desc: '',
+        linkUrl: '',
+        imageUrl: '',
+        radio: 'link',
+        dialogImageUrl: ''
+      }
+    },
+    cancel() {
+      this.dialogFormVisible = false
+      this.upDate = false
+      this.emptyForm()
+    },
+    editCase(item) {
+      this.dialogFormVisible = true
+      this.form.desc = item.desc
+      this.form.name = item.title
+      this.form.dialogImageUrl = item.cover_pic
+      this.form.linkUrl = item.link_url
+      this.form.imageUrl = item.link_url
+      this.radio = item.type
+      this.upDate = true
+      this.caseId = item.id
+    },
     selectTrigger(item, num) {
       console.log(item, '点击成功')
       if (num === 1) {
@@ -184,7 +213,6 @@ export default {
               type: 'success'
             })
           }
-          // item.status = res.data.status
         })
       }
     },
@@ -223,6 +251,16 @@ export default {
       return isJPG && isLt2M
     },
     submitCase() {
+      console.log(this.form.imageUrl, '看看有没有图片')
+      var file = ''
+      if (this.radio === 'image') {
+        file = this.form.imageUrl
+      } else if (this.radio === 'pdf') {
+        file = {
+          'name': this.imageName,
+          'base64': this.form.imageUrl
+        }
+      }
       this.$refs.form.validate(valid => {
         if (this.radio === 'link' && !this.form.linkUrl) {
           this.$message({
@@ -247,33 +285,58 @@ export default {
         }
 
         if (valid) {
-          var file = ''
-          if (this.radio === 'image') {
-            file = this.form.imageUrl
-          } else if (this.radio === 'pdf') {
-            file = {
-              'name': this.imageName,
-              'base64': this.form.imageUrl
-            }
+          if (this.upDate) {
+            updateCase({
+              case_id: this.caseId,
+              title: this.form.name,
+              desc: this.form.desc,
+              cover_pic: this.form.dialogImageUrl,
+              type: this.radio,
+              file: file,
+              link_url: this.form.linkUrl
+            }).then(res => {
+              if (res.code === 1000) {
+                this.$message({
+                  message: '提交成功',
+                  type: 'success'
+                })
+                this.dialogFormVisible = false
+                this.getList()
+                this.upDate = false
+                this.emptyForm()
+              } else {
+                this.$message({
+                  message: res.message,
+                  type: 'error'
+                })
+              }
+            })
+          } else {
+            storeCase({
+              id: this.listQuery.product_id,
+              title: this.form.name,
+              desc: this.form.desc,
+              cover_pic: this.form.dialogImageUrl,
+              type: this.radio,
+              file: file,
+              link_url: this.form.linkUrl
+            }).then(res => {
+              if (res.code === 1000) {
+                this.$message({
+                  message: '提交成功',
+                  type: 'success'
+                })
+                this.dialogFormVisible = false
+                this.getList()
+                this.emptyForm()
+              } else {
+                this.$message({
+                  message: res.message,
+                  type: 'error'
+                })
+              }
+            })
           }
-          storeCase({
-            id: this.listQuery.product_id,
-            title: this.form.name,
-            desc: this.form.desc,
-            cover_pic: this.form.dialogImageUrl,
-            type: this.radio,
-            file: file,
-            link_url: this.form.linkUrl
-          }).then(res => {
-            if (res.code === 1000) {
-              this.$message({
-                message: '提交成功',
-                type: 'success'
-              })
-              this.dialogFormVisible = false
-              this.getList()
-            }
-          })
         } else {
           this.$message({
             message: '请正确填写表单',
