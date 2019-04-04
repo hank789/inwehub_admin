@@ -79,9 +79,9 @@
       <el-table-column align="center" label="" width="320">
         <template slot-scope="scope">
           <el-row>
-            <el-checkbox v-model="checked">显示</el-checkbox>
+            <el-checkbox v-model="scope.row.status" @change="selectTrigger(scope.row, 1)">{{ scope.row.status? '显示' : '隐藏' }}</el-checkbox>
             <el-button type="primary" icon="el-icon-edit" />
-            <el-button type="primary" icon="el-icon-delete" @click.native="dataDockingComplate(scope.row)" />
+            <el-button type="primary" icon="el-icon-delete" @click="selectTrigger(scope.row, 2)" />
           </el-row>
         </template>
       </el-table-column>
@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import { caseList, storeCase } from '@/api/product'
+import { caseList, storeCase, updateCaseStatus } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sortable from 'sortablejs'
 import { fileToBase64 } from '@/utils/image'
@@ -116,12 +116,6 @@ export default {
       dialogFormVisible: false,
       form: {
         name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
         desc: '',
         linkUrl: '',
         dialogImageUrl: '',
@@ -138,7 +132,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        product_id: 206
+        product_id: ''
       },
       sortable: null,
       oldList: [],
@@ -148,8 +142,7 @@ export default {
       fileList: [],
       showFileList: false,
       dialogVisible: false,
-      imageName: '',
-      id: ''
+      imageName: ''
     }
   },
   watch: {
@@ -159,15 +152,43 @@ export default {
     }
   },
   created() {
-    this.getList()
+    this.$store.dispatch('product/getProductInfo').then((product) => {
+      this.listQuery.product_id = product.id
+
+      this.getList()
+    })
   },
   mounted() {
   },
   methods: {
-    getProductId() {
-
+    selectTrigger(item, num) {
+      console.log(item, '点击成功')
+      if (num === 1) {
+        updateCaseStatus({
+          case_id: item.id,
+          status: item.status ? 0 : 1
+        }).then(res => {
+          item.status = res.data.status
+        })
+      }
+      if (num === 2) {
+        updateCaseStatus({
+          case_id: item.id,
+          status: 3
+        }).then(res => {
+          var index = this.list.indexOf(item)
+          this.list.splice(index, 1)
+          if (res.code === 1000) {
+            this.$message({
+              message: '提交成功',
+              type: 'success'
+            })
+          }
+          // item.status = res.data.status
+        })
+      }
     },
-    handleChange(file, fileList) {
+    handleChange(file) {
       fileToBase64(file, (base64) => {
         this.form.imageUrl = base64
         this.imageName = file.name
@@ -179,7 +200,7 @@ export default {
     handlePreview(file) {
       console.log(file)
     },
-    beforeRemove(file, fileList) {
+    beforeRemove(file) {
       return this.$confirm(`确定移除 ${file.name}？`)
     },
     handleExceed(files, fileList) {
@@ -209,7 +230,8 @@ export default {
             type: 'error'
           })
           return false
-        } else if (this.radio === 'image' && !this.form.imageUrl) {
+        }
+        if (this.radio === 'image' && !this.form.imageUrl) {
           this.$message({
             message: '请上传案例图片',
             type: 'error'
@@ -235,7 +257,7 @@ export default {
             }
           }
           storeCase({
-            id: 206,
+            id: this.listQuery.product_id,
             title: this.form.name,
             desc: this.form.desc,
             cover_pic: this.form.dialogImageUrl,
@@ -243,11 +265,14 @@ export default {
             file: file,
             link_url: this.form.linkUrl
           }).then(res => {
-            this.$message({
-              message: '提交成功',
-              type: 'success'
-            })
-            this.dialogFormVisible = false
+            if (res.code === 1000) {
+              this.$message({
+                message: '提交成功',
+                type: 'success'
+              })
+              this.dialogFormVisible = false
+              this.getList()
+            }
           })
         } else {
           this.$message({
@@ -323,7 +348,8 @@ export default {
     img {
       width: 100%;
       height: 100%;
-      overflow: hidden;
+      object-fit: cover;
+      border-radius: 4px;
     }
   }
 
