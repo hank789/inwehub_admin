@@ -155,7 +155,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('product/getProductInfo').then((product) => {
+    this.$store.dispatch('product/getProductInfo', (product) => {
       this.listQuery.product_id = product.id
 
       this.getList()

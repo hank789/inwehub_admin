@@ -67,7 +67,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('product/getProductInfo').then((product) => {
+    this.$store.dispatch('product/getProductInfo', (product) => {
       this.data = product
       this.weappCodeUrl = product.weappCodeUrl
       this.getLineChartData('seven')
