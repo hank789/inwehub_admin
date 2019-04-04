@@ -1,10 +1,9 @@
 <template>
-  <div class="app-container visionBasic">
+  <div class="app-container visionBasic" :v-loading="loading">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>基本信息</span>
       </div>
-
 
       <Upload v-model="dialogImageUrl" style="width:200px;height:200px;"/>
 
@@ -35,6 +34,7 @@ import Upload from '@/components/Upload/singleImage2'
 export default {
   data() {
     return {
+      loading: 1,
       id: null,
       form: {
         name: '',
@@ -56,6 +56,7 @@ export default {
   },
   created() {
     this.$store.dispatch('product/getProductInfo', (product) => {
+      this.loading = 0
       this.dialogImageUrl = product.log
       this.id = product.id
       this.form.name = product.name
