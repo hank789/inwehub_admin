@@ -4,11 +4,27 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>浏览情况</span>
+
       </div>
-      <div class="totalCount">{{ totalCount }}<span>浏览量(次)</span></div>
-      <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-        <line-chart :chart-data="lineChartData" />
-      </el-row>
+
+      <el-tabs class="container-tabs" v-model="activeName" type="border-card" @tab-click="handleClick">
+        <el-tab-pane label="7天" name="seven">
+          <div v-loading="!lineChartData.isInit">
+            <div class="totalCount">{{ lineChartData.totalCount }}<span>浏览量(次)</span></div>
+            <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+              <line-chart :chart-data="lineChartData" />
+            </el-row>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="30天" name="thirty">
+          <div v-loading="!lineChartThirtyData.isInit">
+            <div class="totalCount">{{ lineChartThirtyData.totalCount }}<span>浏览量(次)</span></div>
+            <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+              <line-chart :chart-data="lineChartThirtyData" v-if="lineChartThirtyData.isInit"/>
+            </el-row>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
     </el-card>
 
     <el-card class="box-card" style="margin-top:20px;">
@@ -33,40 +49,61 @@ export default {
   },
   data() {
     return {
+      activeName: 'seven',
       lineChartData: {
         xAxis: [],
-        data: []
+        data: [],
+        totalCount: 0,
+        isInit: false
       },
-      activeName: '',
+      lineChartThirtyData: {
+        xAxis: [],
+        data: [],
+        totalCount: 0,
+        isInit: false
+      },
       data: null,
-      weappCodeUrl: '',
-      totalCount: 0
+      weappCodeUrl: ''
     }
   },
   created() {
     getInfo().then(response => {
       this.data = response.data
       this.weappCodeUrl = response.data.weappCodeUrl
-
-      getViewData({ id: this.data.id, start_time: getSevenDayBeforeTimestamp() / 1000, end_time: getCurTimestamp() / 1000 }).then(res => {
-        const list = res.data.list
-
-        this.totalCount = 0
-
-        for (var i in list) {
-          this.lineChartData.xAxis.push(list[i].ref_date)
-          this.lineChartData.data.push(list[i].value)
-          this.totalCount += list[i].value
-        }
-      })
+      this.getLineChartData('seven')
     })
   },
   methods: {
+    getLineChartData (type) {
+      let container = this.lineChartData
+      let startTime = getSevenDayBeforeTimestamp() / 1000
+      console.log('type', type)
+      if (type == 'thirty') {
+        container = this.lineChartThirtyData
+        startTime = getThirtyDayBeforeTimestamp() / 1000
+      }
+
+      if (container.isInit) {
+        return
+      }
+
+      getViewData({ id: this.data.id, start_time: startTime, end_time: getCurTimestamp() / 1000 }).then(res => {
+        const list = res.data.list
+        container.totalCount = 0
+        container.isInit = true
+
+        for (var i in list) {
+          container.xAxis.push(list[i].ref_date)
+          container.data.push(list[i].value)
+          container.totalCount += list[i].value
+        }
+      })
+    },
     handleSetLineChartData(type) {
       this.lineChartData = lineChartData[type]
     },
-    handleClick() {
-
+    handleClick(tab, event) {
+      this.getLineChartData(tab.name)
     }
   }
 }
