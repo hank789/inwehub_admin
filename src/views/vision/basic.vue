@@ -5,18 +5,8 @@
         <span>基本信息</span>
       </div>
 
-      <el-upload
-        class="avatar-uploader"
-        action="''"
-        :auto-upload="false"
-        :show-file-list="false"
-        list-type="picture"
-        :on-change="handlePictureCardPreview"
-        :on-remove="handleRemove"
-      >
-        <img v-if="dialogImageUrl" :src="dialogImageUrl" class="avatar">
-        <i v-else class="el-icon-plus avatar-uploader-icon" />
-      </el-upload>
+
+      <Upload v-model="dialogImageUrl" style="width:200px;height:200px;"/>
 
       <el-form ref="ruleForm" :model="form" :rules="formRules" label-width="100px" label-position="top">
         <el-form-item label="产品名称" prop="name">
@@ -27,17 +17,7 @@
         </el-form-item>
 
         <el-form-item label="上传介绍图" prop="imageUrl">
-          <el-upload
-            class="avatar-uploader"
-            action="''"
-            :auto-upload="false"
-            :show-file-list="false"
-            :on-change="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
-          >
-            <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon" />
-          </el-upload>
+          <Upload v-model="form.imageUrl" style="width:200px;height:200px;"/>
         </el-form-item>
 
         <el-form-item>
@@ -50,7 +30,7 @@
 
 <script>
 import { updateInfo } from '@/api/product'
-import { fileToBase64 } from '@/utils/image'
+import Upload from '@/components/Upload/singleImage2'
 
 export default {
   data() {
@@ -70,6 +50,9 @@ export default {
       },
       dialogImageUrl: ''
     }
+  },
+  components: {
+    Upload
   },
   created() {
     this.$store.dispatch('product/getProductInfo', (product) => {
@@ -105,11 +88,6 @@ export default {
         }
       })
     },
-    handleAvatarSuccess(file) {
-      fileToBase64(file, (base64) => {
-        this.form.imageUrl = base64
-      })
-    },
     beforeAvatarUpload(file) {
       const isJPG = file.type === 'image/jpeg'
       const isLt2M = file.size / 1024 / 1024 < 2
@@ -124,11 +102,6 @@ export default {
     },
     handleRemove(file, fileList) {
       console.log(file, fileList)
-    },
-    handlePictureCardPreview(file) {
-      fileToBase64(file, (base64) => {
-        this.dialogImageUrl = base64
-      })
     }
   }
 }
