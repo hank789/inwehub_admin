@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { getInfo, updateInfo } from '@/api/product'
+import { updateInfo } from '@/api/product'
 import { fileToBase64 } from '@/utils/image'
 
 export default {
@@ -72,12 +72,12 @@ export default {
     }
   },
   created() {
-    getInfo().then(response => {
-      this.dialogImageUrl = response.data.log
-      this.id = response.data.id
-      this.form.name = response.data.name
-      this.form.desc = response.data.summary
-      this.form.imageUrl = response.data.cover_pic
+    this.$store.dispatch('product/getProductInfo').then((product) => {
+      this.dialogImageUrl = product.log
+      this.id = product.id
+      this.form.name = product.name
+      this.form.desc = product.summary
+      this.form.imageUrl = product.cover_pic
     })
   },
   methods: {
