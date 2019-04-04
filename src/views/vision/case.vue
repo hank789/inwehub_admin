@@ -80,7 +80,7 @@
         <template slot-scope="scope">
           <el-row>
             <el-checkbox v-model="scope.row.status" :trueLabel="1" :falseLabel="0" @change="selectTrigger(scope.row, 1)">{{ scope.row.status? '显示' : '隐藏' }}</el-checkbox>
-            <el-button type="primary" icon="el-icon-edit" />
+            <el-button type="primary" icon="el-icon-edit" @click="editCase(scope.row)" />
             <el-button type="primary" icon="el-icon-delete" @click="selectTrigger(scope.row, 2)" />
           </el-row>
         </template>
@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import { caseList, storeCase, updateCaseStatus } from '@/api/product'
+import { caseList, storeCase, updateCaseStatus, storeCase } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sortable from 'sortablejs'
 import { fileToBase64 } from '@/utils/image'
@@ -142,7 +142,8 @@ export default {
       fileList: [],
       showFileList: false,
       dialogVisible: false,
-      imageName: ''
+      imageName: '',
+      upDate: false
     }
   },
   watch: {
@@ -161,6 +162,16 @@ export default {
   mounted() {
   },
   methods: {
+    editCase(item) {
+      this.dialogFormVisible = true
+      this.form.desc = item.desc
+      this.form.name = item.title
+      this.form.dialogImageUrl = item.cover_pic
+      this.form.linkUrl = item.link_url
+      this.form.imageUrl = item.file
+      this.radio = item.type
+      this.upDate = true
+    },
     selectTrigger(item, num) {
       console.log(item, '点击成功')
       if (num === 1) {
@@ -223,65 +234,81 @@ export default {
       return isJPG && isLt2M
     },
     submitCase() {
-      this.$refs.form.validate(valid => {
-        if (this.radio === 'link' && !this.form.linkUrl) {
-          this.$message({
-            message: '请填写链接地址',
-            type: 'error'
-          })
-          return false
-        }
-        if (this.radio === 'image' && !this.form.imageUrl) {
-          this.$message({
-            message: '请上传案例图片',
-            type: 'error'
-          })
-          return false
-        }
-        if (this.radio === 'pdf' && !this.form.imageUrl) {
-          this.$message({
-            message: '请上传pdf文件',
-            type: 'error'
-          })
-          return false
-        }
-
-        if (valid) {
-          var file = ''
-          if (this.radio === 'image') {
-            file = this.form.imageUrl
-          } else if (this.radio === 'pdf') {
-            file = {
-              'name': this.imageName,
-              'base64': this.form.imageUrl
-            }
+      if (this.upDate) {
+        storeCase({
+          case_id: item.id,
+          title: this.form.name,
+          desc: this.form.desc,
+          cover_pic: this.form.dialogImageUrl,
+          type: this.radio,
+          file: file,
+          link_url: this.form.linkUrl
+        }).then(res => {
+          if (res.code === 1000) {
+            console.log('更新案例成功')
           }
-          storeCase({
-            id: this.listQuery.product_id,
-            title: this.form.name,
-            desc: this.form.desc,
-            cover_pic: this.form.dialogImageUrl,
-            type: this.radio,
-            file: file,
-            link_url: this.form.linkUrl
-          }).then(res => {
-            if (res.code === 1000) {
-              this.$message({
-                message: '提交成功',
-                type: 'success'
-              })
-              this.dialogFormVisible = false
-              this.getList()
+        })
+      } else {
+        this.$refs.form.validate(valid => {
+          if (this.radio === 'link' && !this.form.linkUrl) {
+            this.$message({
+              message: '请填写链接地址',
+              type: 'error'
+            })
+            return false
+          }
+          if (this.radio === 'image' && !this.form.imageUrl) {
+            this.$message({
+              message: '请上传案例图片',
+              type: 'error'
+            })
+            return false
+          }
+          if (this.radio === 'pdf' && !this.form.imageUrl) {
+            this.$message({
+              message: '请上传pdf文件',
+              type: 'error'
+            })
+            return false
+          }
+
+          if (valid) {
+            var file = ''
+            if (this.radio === 'image') {
+              file = this.form.imageUrl
+            } else if (this.radio === 'pdf') {
+              file = {
+                'name': this.imageName,
+                'base64': this.form.imageUrl
+              }
             }
-          })
-        } else {
-          this.$message({
-            message: '请正确填写表单',
-            type: 'error'
-          })
-          return false
-        }
-      })
+            storeCase({
+              id: this.listQuery.product_id,
+              title: this.form.name,
+              desc: this.form.desc,
+              cover_pic: this.form.dialogImageUrl,
+              type: this.radio,
+              file: file,
+              link_url: this.form.linkUrl
+            }).then(res => {
+              if (res.code === 1000) {
+                this.$message({
+                  message: '提交成功',
+                  type: 'success'
+                })
+                this.dialogFormVisible = false
+                this.getList()
+              }
+            })
+          } else {
+            this.$message({
+              message: '请正确填写表单',
+              type: 'error'
+            })
+            return false
+          }
+        })
+      }
     },
     getList() {
       this.listLoading = true
