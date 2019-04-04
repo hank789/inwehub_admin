@@ -39,7 +39,7 @@
 
 <script>
 import LineChart from './components/Liulanqingkuang'
-import { getInfo, getViewData } from '@/api/product'
+import { getViewData } from '@/api/product'
 import { getCurTimestamp, getSevenDayBeforeTimestamp, getThirtyDayBeforeTimestamp } from '@/utils/time'
 
 export default {
@@ -67,9 +67,9 @@ export default {
     }
   },
   created() {
-    getInfo().then(response => {
-      this.data = response.data
-      this.weappCodeUrl = response.data.weappCodeUrl
+    this.$store.dispatch('product/getProductInfo').then((product) => {
+      this.data = product
+      this.weappCodeUrl = product.weappCodeUrl
       this.getLineChartData('seven')
     })
   },
