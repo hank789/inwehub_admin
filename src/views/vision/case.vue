@@ -191,11 +191,10 @@ export default {
       this.caseId = item.id
     },
     selectTrigger(item, num) {
-      console.log(item, '点击成功')
       if (num === 1) {
         updateCaseStatus({
           case_id: item.id,
-          status: item.status ? 0 : 1
+          status: item.status
         }).then(res => {
           item.status = res.data.status
         })
@@ -251,7 +250,6 @@ export default {
       return isJPG && isLt2M
     },
     submitCase() {
-      console.log(this.form.imageUrl, '看看有没有图片')
       var file = ''
       if (this.radio === 'image') {
         file = this.form.imageUrl
