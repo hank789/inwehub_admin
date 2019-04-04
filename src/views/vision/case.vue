@@ -79,7 +79,7 @@
       <el-table-column align="center" label="" width="320">
         <template slot-scope="scope">
           <el-row>
-            <el-checkbox v-model="scope.row.status" @change="selectTrigger(scope.row, 1)">{{ scope.row.status? '显示' : '隐藏' }}</el-checkbox>
+            <el-checkbox v-model="scope.row.status" :trueLabel="1" :falseLabel="0" @change="selectTrigger(scope.row, 1)">{{ scope.row.status? '显示' : '隐藏' }}</el-checkbox>
             <el-button type="primary" icon="el-icon-edit" />
             <el-button type="primary" icon="el-icon-delete" @click="selectTrigger(scope.row, 2)" />
           </el-row>
