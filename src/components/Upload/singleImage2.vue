@@ -6,7 +6,6 @@
       :auto-upload="false"
       :show-file-list="false"
       list-type="picture"
-      :before-upload="beforeAvatarUpload"
       :on-change="handleImageSuccess"
       class="image-uploader"
       drag

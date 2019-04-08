@@ -30,7 +30,7 @@
     </el-tabs>
 
     <el-table v-loading="listLoading" v-if="activeName === 'first'" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="标题" width="440px">
+      <el-table-column align="center" label="标题"  min-width="440px">
         <template slot-scope="scope">
           <span>{{ scope.row.title }}</span>
         </template>
@@ -46,7 +46,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="" width="270">
+      <el-table-column align="center" label="" width="170">
         <template slot-scope="scope">
           <el-checkbox v-model="scope.row.status" :true-label="1" :false-label="0" @change="selectTrigger(scope.row, 1)">{{ scope.row.status? '显示' : '隐藏' }}</el-checkbox>
           <el-button type="primary" icon="el-icon-delete" @click="selectTrigger(scope.row, 2)" />

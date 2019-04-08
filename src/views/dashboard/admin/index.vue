@@ -7,7 +7,7 @@
 
       </div>
 
-      <el-tabs class="container-tabs" v-model="activeName" type="border-card" @tab-click="handleClick">
+      <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick">
         <el-tab-pane label="7天" name="seven">
           <div v-loading="!lineChartData.isInit">
             <div class="totalCount">{{ lineChartData.totalCount }}<span>浏览量(次)</span></div>
