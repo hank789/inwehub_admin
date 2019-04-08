@@ -68,7 +68,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="753px" align="center" label="">
+      <el-table-column min-width="753px" align="center" label="">
         <template slot-scope="scope">
           <div class="container-case-info">
             <div class="info-name">{{ scope.row.title }}</div>
