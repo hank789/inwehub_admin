@@ -2,6 +2,19 @@
   <div class="app-container">
     <el-button type="primary" class="add-latest-news" @click="addContent">添加咨询</el-button>
 
+    <el-dialog
+      title="确定删除？"
+      :visible.sync="centerDialogVisible"
+      width="30%"
+      center
+    >
+      <span>删除后将不可恢复。</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="deleteNews">确 定</el-button>
+      </span>
+    </el-dialog>
+
     <el-dialog :title="title" :visible.sync="dialogFormVisible">
       <el-form :model="form" label-position="top" class="form-wrapper">
         <el-form-item label="" :label-width="formLabelWidth">
@@ -127,7 +140,9 @@ export default {
       sourceTitle: false,
       linkUrl: false,
       placeholder: '',
-      sourceId: ''
+      sourceId: '',
+      centerDialogVisible: false,
+      item: {}
     }
   },
   created() {
@@ -235,6 +250,23 @@ export default {
         this.getList()
       })
     },
+    deleteNews() {
+      updateNewsStatus({
+        product_id: this.listQuery.product_id,
+        news_id: this.item.id,
+        status: 3
+      }).then(res => {
+        var index = this.list.indexOf(this.item)
+        this.list.splice(index, 1)
+        if (res.code === 1000) {
+          this.$message({
+            message: '提交成功',
+            type: 'success'
+          })
+          this.centerDialogVisible = false
+        }
+      })
+    },
     selectTrigger(item, num) {
       console.log(item, '数据')
       if (num === 1) {
@@ -247,20 +279,8 @@ export default {
         })
       }
       if (num === 2) {
-        updateNewsStatus({
-          product_id: this.listQuery.product_id,
-          news_id: item.id,
-          status: 3
-        }).then(res => {
-          var index = this.list.indexOf(item)
-          this.list.splice(index, 1)
-          if (res.code === 1000) {
-            this.$message({
-              message: '提交成功',
-              type: 'success'
-            })
-          }
-        })
+        this.item = item
+        this.centerDialogVisible = true
       }
     },
     handleClick(tab, event) {
