@@ -1,13 +1,13 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" class="add-latest-news" @click="dialogFormVisible = true">添加咨询</el-button>
+    <el-button type="primary" class="add-latest-news" @click="addContent">添加咨询</el-button>
 
-    <el-dialog title="添加资讯" :visible.sync="dialogFormVisible">
+    <el-dialog :title="title" :visible.sync="dialogFormVisible">
       <el-form :model="form" label-position="top" class="form-wrapper">
         <el-form-item label="" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off" placeholder="输入文章链接" />
+          <el-input v-model="form.name" autocomplete="off" :placeholder="placeholder" />
           <div class="search" @click="search">搜索</div>
-          <div class="urlInfoWrapper">
+          <div class="urlInfoWrapper" v-if="linkUrl">
             <div class="urlName">{{ searchInfo.title }}</div>
             <div class="bottomInfo">
               <span>{{ searchInfo.date }}</span>
@@ -15,6 +15,7 @@
               <span>{{ searchInfo.author }}</span>
             </div>
           </div>
+          <div class="sourceTitle" v-if="sourceTitle">RSS<i />{{ weChatTitle }}</div>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -28,7 +29,7 @@
       <el-tab-pane label="内容管理" name="second">内容管理</el-tab-pane>
     </el-tabs>
 
-    <el-table v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
+    <el-table v-loading="listLoading" v-if="activeName === 'first'" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="标题" width="440px">
         <template slot-scope="scope">
           <span>{{ scope.row.title }}</span>
@@ -53,12 +54,42 @@
       </el-table-column>
     </el-table>
 
+    <el-table v-loading="listLoading" v-if="activeName === 'second'" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
+      <el-table-column align="center" label="源名称" width="300px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="280px" align="center" label="类型">
+        <template slot-scope="scope">
+          <span>{{ scope.row.type }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="180px" align="center" label="资讯数">
+        <template slot-scope="scope">
+          <span>{{ scope.row.news_count }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="330px" align="center" label="最近更新">
+        <template slot-scope="scope">
+          <span>{{ scope.row.last_update }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="" width="100">
+        <template slot-scope="scope">
+          <el-button type="primary" icon="el-icon-delete" @click="deleSource(scope.row)" />
+        </template>
+      </el-table-column>
+    </el-table>
+
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
   </div>
 </template>
 
 <script>
-import { newsList, updateNewsStatus, fetchUrlInfo, storeNews } from '@/api/product'
+import { newsList, sourceList, updateNewsStatus, fetchUrlInfo, storeNews, delSource, fetchSourceInfo, storeSource } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
 export default {
@@ -90,7 +121,13 @@ export default {
       },
       checked: true,
       activeName: 'first',
-      searchInfo: {}
+      searchInfo: {},
+      title: '',
+      weChatTitle: '',
+      sourceTitle: false,
+      linkUrl: false,
+      placeholder: '',
+      sourceId: ''
     }
   },
   created() {
@@ -100,27 +137,102 @@ export default {
       this.getList()
     })
   },
+  watch: {
+    'activeName'() {
+      this.getList()
+    }
+  },
   methods: {
+    addContent() {
+      this.dialogFormVisible = true
+      if (this.activeName === 'first') {
+        this.title = '添加资讯'
+        this.placeholder = '输入文章链接'
+      } else if (this.activeName === 'second') {
+        this.title = '添加内容源'
+        this.placeholder = '请输入公众号名称或RSS链接'
+      }
+    },
     search() {
-      fetchUrlInfo({
-        url: this.form.name
-      }).then(res => {
-        this.searchInfo = res.data
-        console.log(res, '搜索数据')
-      })
+      if (this.activeName === 'first') {
+        fetchUrlInfo({
+          url: this.form.name
+        }).then(res => {
+          if (res.code === 1000) {
+            this.linkUrl = true
+            this.searchInfo = res.data
+          }
+        })
+      } else if (this.activeName === 'second') {
+        fetchSourceInfo({
+          product_id: this.listQuery.product_id,
+          source: this.form.name
+        }).then(res => {
+          if (res.code === 1000) {
+            this.sourceTitle = true
+            this.weChatTitle = res.data.title
+            this.sourceId = res.data.source_id
+          }
+        })
+      }
     },
     submitPoint() {
-      storeNews({
-        url: this.form.name,
-        product_id: this.listQuery.product_id
+      if (this.activeName === 'first') {
+        storeNews({
+          url: this.form.name,
+          product_id: this.listQuery.product_id
+        }).then(res => {
+          if (res.code === 1000) {
+            this.$message({
+              message: '提交成功',
+              type: 'success'
+            })
+            this.getList()
+            this.dialogFormVisible = false
+            this.form.name = ''
+            this.linkUrl = false
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'error'
+            })
+          }
+        })
+      } else if (this.activeName === 'second') {
+        storeSource({
+          id: this.listQuery.product_id,
+          source: this.form.name,
+          source_id: this.sourceId
+        }).then(res => {
+          if (res.code === 1000) {
+            this.$message({
+              message: '提交成功',
+              type: 'success'
+            })
+            this.getList()
+            this.dialogFormVisible = false
+            this.form.name = ''
+            this.sourceTitle = false
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'error'
+            })
+          }
+        })
+      }
+    },
+    deleSource(item) {
+      delSource({
+        source_id: item.id
       }).then(res => {
         if (res.code === 1000) {
           this.$message({
-            message: '提交成功',
+            message: '删除成功',
             type: 'success'
           })
-          this.getList()
         }
+        this.getList()
       })
     },
     selectTrigger(item, num) {
@@ -152,15 +264,23 @@ export default {
       }
     },
     handleClick(tab, event) {
-      console.log(tab, event)
+      console.log(event.srcElement.innerText, this.activeName, 'tab:event')
     },
     getList() {
       this.listLoading = true
-      newsList(this.listQuery).then(response => {
-        this.list = response.data.data
-        this.total = response.data.total
-        this.listLoading = false
-      })
+      if (this.activeName === 'first') {
+        newsList(this.listQuery).then(response => {
+          this.list = response.data.data
+          this.total = response.data.total
+          this.listLoading = false
+        })
+      } else if (this.activeName === 'second') {
+        sourceList(this.listQuery).then(response => {
+          this.list = response.data.data
+          this.total = response.data.total
+          this.listLoading = false
+        })
+      }
     },
     handleSizeChange(val) {
       this.listQuery.limit = val
@@ -220,6 +340,20 @@ export default {
           display: inline-block;
         }
       }
+    }
+  }
+  .sourceTitle {
+    color: #4A5F7B;
+    font-size: 14px;
+    margin-top: 20px;
+    font-family:PingFangSC-Medium;
+    i {
+      width: 1px;
+      height: 12px;
+      margin: 0 10px;
+      vertical-align: middle;
+      background: #E0E8EF;
+      display: inline-block;
     }
   }
 </style>
