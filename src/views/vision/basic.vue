@@ -5,7 +5,7 @@
         <span>基本信息</span>
       </div>
 
-      <Upload v-model="dialogImageUrl" style="width:200px;height:200px;"/>
+      <Upload v-model="dialogImageUrl" style="width:200px;height:200px;" :placeholder="'添加产品Logo<br/>尺寸200px*200px<br/>2M以内'"/>
 
       <el-form ref="ruleForm" :model="form" :rules="formRules" label-width="100px" label-position="top">
         <el-form-item label="产品名称" prop="name">
@@ -16,7 +16,7 @@
         </el-form-item>
 
         <el-form-item label="上传介绍图" prop="imageUrl">
-          <Upload v-model="form.imageUrl" style="width:200px;height:200px;"/>
+          <Upload v-model="form.imageUrl" style="width:480px;height:184px;" :placeholder="'添加产品介绍图<br/>推荐尺寸900px*600px'"/>
         </el-form-item>
 
         <el-form-item>
@@ -88,21 +88,6 @@ export default {
           return false
         }
       })
-    },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg'
-      const isLt2M = file.size / 1024 / 1024 < 2
-
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!')
-      }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!')
-      }
-      return isJPG && isLt2M
-    },
-    handleRemove(file, fileList) {
-      console.log(file, fileList)
     }
   }
 }
