@@ -11,16 +11,16 @@
       drag
     >
 
-      <i class="el-icon-upload" />
-      <div class="el-upload__text">
-        Drag或<em>点击上传</em>
+      <div class="image-prepare">
+        <svg-icon icon-class="camera" />
+        <div class="image-desc" v-html="placeholder"></div>
       </div>
 
       <div v-show="imageUrl.length>0" class="image-preview">
         <div v-show="imageUrl.length>1" class="image-preview-wrapper">
           <img :src="imageUrl">
           <div class="image-preview-action">
-            <i class="el-icon-plus"/>
+            <svg-icon icon-class="camera" />
           </div>
         </div>
       </div>
@@ -39,6 +39,10 @@ export default {
     value: {
       type: String,
       default: ''
+    },
+    placeholder: {
+      type: String,
+      default: '添加产品Logo<br/>尺寸200px*200px<br/>2M以内'
     }
   },
   data() {
@@ -79,13 +83,36 @@ export default {
   .image-uploader {
     height: 100%;
   }
+  .image-prepare{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction:column;
+    background:rgba(247,251,254,1);
+
+
+    .svg-icon{
+      font-size:39px;
+      color:#B1BDCC;
+    }
+
+    .image-desc{
+      color:#B1BDCC;
+      font-size:14px;
+      margin-top:5px;
+      line-height:20px;
+    }
+  }
   .image-preview {
     width: 100%;
     height: 100%;
     position: absolute;
     left: 0px;
     top: 0px;
-    border: 1px dashed #d9d9d9;
+
     .image-preview-wrapper {
       position: relative;
       width: 100%;
@@ -96,6 +123,7 @@ export default {
       }
     }
     .image-preview-action {
+      border-radius:8px;
       position: absolute;
       width: 100%;
       height: 100%;
@@ -106,7 +134,6 @@ export default {
       color: #fff;
       opacity: 0;
       font-size: 20px;
-      background-color: rgba(0, 0, 0, .5);
       transition: opacity .3s;
       cursor: pointer;
       text-align: center;
@@ -114,10 +141,15 @@ export default {
       .el-icon-delete {
         font-size: 36px;
       }
+      .svg-icon{
+        font-size:26px;
+      }
     }
     &:hover {
       .image-preview-action {
         opacity: 1;
+        background:rgba(42,52,68,1);
+        opacity:0.7;
       }
     }
   }
