@@ -3,10 +3,16 @@
     <div class="top-text">请上传统一尺寸的图片，否则以首张图片尺寸为准(限10张)</div>
     <el-upload
       class="avatar-image"
-      action="https://jsonplaceholder.typicode.com/posts/"
+      action="''"
+      :auto-upload="false"
+      multiple
       list-type="picture-card"
+      :on-change="handleAvatarSuccess"
       :on-preview="handlePictureCardPreview"
       :on-remove="handleRemove"
+      :file-list="filePic"
+      :on-exceed="handleExceed"
+      :limit="10"
     >
       <div class="container-text">
         <svg-icon icon-class="camera" />
@@ -20,26 +26,87 @@
     </el-dialog>
 
     <el-row>
-      <el-button type="primary">保存</el-button>
+      <el-button type="primary" @click="submit">保存</el-button>
     </el-row>
   </div>
 </template>
 
 <script>
+import { getIntroducePic, updateIntroducePic, deleteIntroducePic } from '@/api/product'
+import { fileToBase64 } from '@/utils/image'
 export default {
-  data() {
+  data: function() {
     return {
-      dialogImageUrl: '',
-      dialogVisible: false
+      dialogImageUrl: [],
+      dialogVisible: false,
+      listQuery: {
+        product_id: ''
+      },
+      filePic: []
     }
   },
+  created() {
+    this.$store.dispatch('product/getProductInfo', (product) => {
+      this.listQuery.product_id = product.id
+
+      this.getPicList()
+    })
+  },
   methods: {
+    submit() {
+      // const newArr = this.dialogImageUrl.map(item => { return item })
+      // console.log('图片', newArr)
+      updateIntroducePic({
+        id: this.listQuery.product_id,
+        introduce_pic_arr: this.dialogImageUrl
+      }).then(res => {
+        if (res.code === 1000) {
+          this.$message({
+            message: '提交成功',
+            type: 'success'
+          })
+        }
+      })
+    },
+    getPicList() {
+      getIntroducePic({
+        id: this.listQuery.product_id
+      }).then(res => {
+        const newArr = res.data.introduce_pic.map(item => { return { url: item } })
+        this.filePic = newArr
+      })
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 10 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+
     handleRemove(file, fileList) {
-      console.log(file, fileList)
+      console.log(file, fileList, '删除')
+      deleteIntroducePic({
+        introduce_pic: file.url,
+        id: this.listQuery.product_id
+      }).then(res => {
+        if (res.code === 1000) {
+          this.$message({
+            message: '提交成功',
+            type: 'success'
+          })
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
+        }
+      })
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
+    },
+    handleAvatarSuccess(file, fileList) {
+      fileToBase64(file, (base64) => {
+        this.dialogImageUrl.push(base64)
+      })
     }
   }
 }
@@ -74,5 +141,12 @@ export default {
     border: none;
     line-height: 0px;
     background: #F7FBFE;
+  }
+  .avatar-image .el-upload-list li {
+    width: 266px;
+    height: 399px;
+  }
+  .avatar-image .el-upload-list li img {
+    object-fit: cover;
   }
 </style>
