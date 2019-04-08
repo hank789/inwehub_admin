@@ -1,6 +1,20 @@
 <template>
   <div class="app-container">
     <div class="top-text">请上传统一尺寸的图片，否则以首张图片尺寸为准(限10张)</div>
+
+    <el-dialog
+      title="确定删除？"
+      :visible.sync="centerDialogVisible"
+      width="30%"
+      center
+    >
+      <span>删除后将不可恢复。</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="deletePic">确 定</el-button>
+      </span>
+    </el-dialog>
+
     <el-upload
       class="avatar-image"
       action="''"
@@ -42,7 +56,9 @@ export default {
       listQuery: {
         product_id: ''
       },
-      filePic: []
+      filePic: [],
+      centerDialogVisible: false,
+      fileUrl: ''
     }
   },
   created() {
@@ -54,8 +70,6 @@ export default {
   },
   methods: {
     submit() {
-      // const newArr = this.dialogImageUrl.map(item => { return item })
-      // console.log('图片', newArr)
       updateIntroducePic({
         id: this.listQuery.product_id,
         introduce_pic_arr: this.dialogImageUrl
@@ -79,16 +93,14 @@ export default {
     handleExceed(files, fileList) {
       this.$message.warning(`当前限制选择 10 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
-
-    handleRemove(file, fileList) {
-      console.log(file, fileList, '删除')
+    deletePic() {
       deleteIntroducePic({
-        introduce_pic: file.url,
+        introduce_pic: this.fileUrl,
         id: this.listQuery.product_id
       }).then(res => {
         if (res.code === 1000) {
           this.$message({
-            message: '提交成功',
+            message: '删除成功',
             type: 'success'
           })
         } else {
@@ -98,6 +110,10 @@ export default {
           })
         }
       })
+    },
+    handleRemove(file, fileList) {
+      this.centerDialogVisible = true
+      this.fileUrl = file.url
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url
