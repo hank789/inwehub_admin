@@ -19,32 +19,20 @@
     <el-dialog title="添加案例" :visible.sync="dialogFormVisible">
 
       <el-form ref="form" :model="form" :rules="formRules" label-position="top">
-        <el-form-item label="" prop="dialogImageUrl">
-          <el-upload
-            class="avatar-uploader container-caseImg"
-            action="''"
-            :auto-upload="false"
-            :show-file-list="false"
-            list-type="picture"
-            :on-change="handlePictureCardPreview"
-            :on-remove="handleRemove"
-          >
-            <img v-if="form.dialogImageUrl" :src="form.dialogImageUrl" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon" />
-          </el-upload>
-        </el-form-item>
+
+        <Upload v-model="form.dialogImageUrl" style="width:300px;height:200px;" :placeholder="'添加产品Logo<br/>尺寸200px*200px<br/>2M以内'" />
 
         <el-form-item label="案例名称" prop="name" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off" />
+          <el-input v-model="form.name" placeholder="输入案例名称" autocomplete="off" />
         </el-form-item>
         <el-form-item label="案例概述" prop="desc" :label-width="formLabelWidth">
-          <el-input v-model="form.desc" autocomplete="off" />
+          <el-input type="textarea" :rows="8" placeholder="输入案例概述" v-model="form.desc"></el-input>
         </el-form-item>
         <el-radio v-model="radio" label="link">链接</el-radio>
         <el-radio v-model="radio" label="pdf">PDF文档</el-radio>
         <el-radio v-model="radio" label="image">图片</el-radio>
 
-        <el-form-item prop="linkName" label="" :label-width="formLabelWidth">
+        <el-form-item class="marginTop" prop="linkName" label="" :label-width="formLabelWidth">
           <el-input v-if="radio === 'link'" v-model="form.linkUrl" placeholder="输入案例链接" />
         </el-form-item>
 
@@ -111,6 +99,7 @@ import { caseList, storeCase, updateCaseStatus, updateCase } from '@/api/product
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sortable from 'sortablejs'
 import { fileToBase64 } from '@/utils/image'
+import Upload from '@/components/Upload/singleImage2'
 
 export default {
   name: 'ArticleList',
@@ -162,6 +151,9 @@ export default {
       centerDialogVisible: false,
       item: {}
     }
+  },
+  components: {
+    Upload
   },
   watch: {
     'radio'() {
@@ -449,24 +441,26 @@ export default {
   .pagination-container {
     text-align: center;
   }
+  .marginTop {
+    margin-top: 10px;
+  }
 </style>
 
 <style>
   .container-caseImg.avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
     border-radius: 6px;
     cursor: pointer;
     position: relative;
     overflow: hidden;
   }
   .container-caseImg.avatar-uploader .el-upload:hover {
-    border-color: #409EFF;
   }
   .container-caseImg .avatar-uploader-icon {
     font-size: 28px;
     color: #8c939d;
-    width: 178px;
-    height: 178px;
+    width: 300px;
+    height: 200px;
+    background: #F7FBFE;
     line-height: 178px;
     text-align: center;
   }
