@@ -35,8 +35,9 @@
 </template>
 
 <script>
-import { getIntroducePic, updateIntroducePic, deleteIntroducePic } from '@/api/product'
+import { getIntroducePic, updateIntroducePic, deleteIntroducePic, sortIntroducePic } from '@/api/product'
 import { fileToBase64 } from '@/utils/image'
+import Sortable from 'sortablejs'
 export default {
   data: function() {
     return {
@@ -45,7 +46,10 @@ export default {
       listQuery: {
         product_id: ''
       },
-      filePic: []
+      filePic: [],
+      sortable: null,
+      oldList: [],
+      newList: []
     }
   },
   created() {
@@ -82,6 +86,9 @@ export default {
         } else {
           document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'inline-block'
         }
+        this.$nextTick(() => {
+          this.setSort()
+        })
       })
     },
     handleExceed(files, fileList) {
@@ -128,6 +135,30 @@ export default {
       }
       fileToBase64(file, (base64) => {
         this.dialogImageUrl.push(base64)
+      })
+    },
+    setSort() {
+      const el = this.$refs.foreignPersonUploadItem.$el.querySelector('.avatar-image > ul')
+      this.sortable = Sortable.create(el, {
+        ghostClass: 'sortable-ghost', // Class name for the drop placeholder,
+        setData: function(dataTransfer) {
+          dataTransfer.setData('Text', '')
+          // to avoid Firefox bug
+          // Detail see : https://github.com/RubaXa/Sortable/issues/1012
+        },
+        onEnd: evt => {
+          const targetRow = this.filePic.splice(evt.newIndex, 1)[0]
+          this.filePic.splice(evt.newIndex, 0, targetRow)
+          const tempIndex = this.filePic.splice(evt.oldIndex, 1)[0]
+          this.filePic.splice(evt.newIndex, 0, tempIndex)
+          const newArr = this.filePic.map(item => { return item.url })
+          sortIntroducePic({
+            id: this.listQuery.product_id,
+            introduce_pic_arr: newArr
+          }).then(res => {
+            console.log(res)
+          })
+        }
       })
     }
   }
