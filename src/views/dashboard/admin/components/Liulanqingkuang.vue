@@ -110,7 +110,7 @@ export default {
           data: []
         },
         series: [{
-          name: 'expected', itemStyle: {
+          name: '浏览数', itemStyle: {
             normal: {
               color: '#03AEF9',
               lineStyle: {
