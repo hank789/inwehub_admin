@@ -68,7 +68,7 @@
     </el-table>
 
     <el-table v-loading="listLoading" v-if="activeName === 'second'" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="源名称" width="300px">
+      <el-table-column align="center" label="源名称" min-width="300px">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
@@ -238,34 +238,41 @@ export default {
       }
     },
     deleSource(item) {
-      delSource({
-        source_id: item.id
-      }).then(res => {
-        if (res.code === 1000) {
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-        }
-        this.getList()
-      })
+      this.centerDialogVisible = true
+      this.item = item
     },
     deleteNews() {
-      updateNewsStatus({
-        product_id: this.listQuery.product_id,
-        news_id: this.item.id,
-        status: 3
-      }).then(res => {
-        var index = this.list.indexOf(this.item)
-        this.list.splice(index, 1)
-        if (res.code === 1000) {
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-          this.centerDialogVisible = false
-        }
-      })
+      if (this.activeName === 'first') {
+        updateNewsStatus({
+          product_id: this.listQuery.product_id,
+          news_id: this.item.id,
+          status: 3
+        }).then(res => {
+          if (res.code === 1000) {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            var index = this.list.indexOf(this.item)
+            this.list.splice(index, 1)
+            this.centerDialogVisible = false
+          }
+        })
+      } else if (this.activeName === 'second') {
+        delSource({
+          source_id: this.item.id
+        }).then(res => {
+          if (res.code === 1000) {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            var index = this.list.indexOf(this.item)
+            this.list.splice(index, 1)
+            this.centerDialogVisible = false
+          }
+        })
+      }
     },
     selectTrigger(item, num) {
       console.log(item, '数据')
