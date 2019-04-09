@@ -55,6 +55,8 @@ export default {
       this.getPicList()
     })
   },
+  mounted() {
+  },
   methods: {
     submit() {
       updateIntroducePic({
@@ -75,6 +77,12 @@ export default {
       }).then(res => {
         const newArr = res.data.introduce_pic.map(item => { return { url: item } })
         this.filePic = newArr
+        console.log(this.filePic.length, 'filePic长度')
+        if (this.filePic.length >= 10) {
+          document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'none'
+        } else {
+          document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'inline-block'
+        }
       })
     },
     handleExceed(files, fileList) {
@@ -95,7 +103,9 @@ export default {
               message: '删除成功',
               type: 'success'
             })
+            this.filePic.length--
             this.getPicList()
+            console.log(this.filePic.length, '删除之后filePic长度')
           } else {
             this.$message({
               message: res.message,
@@ -115,6 +125,9 @@ export default {
       this.dialogVisible = true
     },
     handleAvatarSuccess(file, fileList) {
+      if (fileList.length >= 10) {
+        document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'none'
+      }
       fileToBase64(file, (base64) => {
         this.dialogImageUrl.push(base64)
       })
