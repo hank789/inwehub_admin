@@ -45,7 +45,9 @@
     <el-table v-if="activeName === 'first'" v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="标题" min-width="440px">
         <template slot-scope="scope">
-          <span>{{ scope.row.title }}</span>
+          <a :href="scope.ro.link_url" target="_blank">
+            <span>{{ scope.row.title }}</span>
+          </a>
         </template>
       </el-table-column>
       <el-table-column width="300px" align="center" label="来源">
