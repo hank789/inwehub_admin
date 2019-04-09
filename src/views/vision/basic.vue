@@ -5,18 +5,18 @@
         <span>基本信息</span>
       </div>
 
-      <Upload v-model="dialogImageUrl" style="width:200px;height:200px;" :placeholder="'添加产品Logo<br/>尺寸200px*200px<br/>2M以内'"/>
+      <Upload v-model="dialogImageUrl" style="width:200px;height:200px;" :placeholder="'添加产品Logo<br/>尺寸200px*200px<br/>2M以内'" />
 
       <el-form ref="ruleForm" :model="form" :rules="formRules" label-width="100px" label-position="top">
         <el-form-item label="产品名称" prop="name">
-          <el-input v-model="form.name" name="name" placeholder="输入产品名称"/>
+          <el-input v-model="form.name" name="name" placeholder="输入产品名称" />
         </el-form-item>
         <el-form-item label="产品介绍" prop="desc">
-          <el-input v-model="form.desc" name="desc" type="textarea" size="medium" class="textareaInput" placeholder="输入产品详细介绍"/>
+          <el-input v-model="form.desc" name="desc" type="textarea" size="medium" class="textareaInput" placeholder="输入产品详细介绍" />
         </el-form-item>
 
         <el-form-item label="上传介绍图" prop="imageUrl">
-          <Upload v-model="form.imageUrl" style="width:480px;height:184px;" :placeholder="'添加产品介绍图<br/>推荐尺寸900px*600px'"/>
+          <Upload v-model="form.imageUrl" style="width:480px;height:184px;" :placeholder="'添加产品介绍图<br/>推荐尺寸900px*600px'" />
         </el-form-item>
 
         <el-form-item>
@@ -32,6 +32,10 @@ import { updateInfo } from '@/api/product'
 import Upload from '@/components/Upload/singleImage2'
 
 export default {
+  components: {
+
+    Upload
+  },
   data() {
     return {
       loading: 1,
@@ -43,16 +47,14 @@ export default {
       },
       formRules: {
         name: [
-          { required: true, trigger: 'blur', message: '请输入产品名称'}
+
+          { required: true, trigger: 'blur', message: '请输入产品名称' }
         ],
         desc: [{ required: true, trigger: 'blur', message: '请输入产品介绍' }],
-        imageUrl: [{ required: true, trigger: 'blur', message: '请上传介绍图' }],
+        imageUrl: [{ required: true, trigger: 'blur', message: '请上传介绍图' }]
       },
       dialogImageUrl: ''
     }
-  },
-  components: {
-    Upload
   },
   created() {
     this.$store.dispatch('product/getProductInfo', (product) => {
