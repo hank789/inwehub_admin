@@ -2,21 +2,9 @@
   <div class="app-container">
     <div class="top-text">请上传统一尺寸的图片，否则以首张图片尺寸为准(限10张)</div>
 
-    <el-dialog
-      title="确定删除？"
-      :visible.sync="centerDialogVisible"
-      width="30%"
-      center
-    >
-      <span>删除后将不可恢复。</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="centerDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="deletePic">确 定</el-button>
-      </span>
-    </el-dialog>
-
     <el-upload
       class="avatar-image"
+      ref="foreignPersonUploadItem"
       action="''"
       :auto-upload="false"
       multiple
@@ -27,6 +15,7 @@
       :file-list="filePic"
       :on-exceed="handleExceed"
       :limit="10"
+      :before-remove="beforeRemove"
     >
       <div class="container-text">
         <svg-icon icon-class="camera" />
@@ -56,9 +45,7 @@ export default {
       listQuery: {
         product_id: ''
       },
-      filePic: [],
-      centerDialogVisible: false,
-      fileUrl: ''
+      filePic: []
     }
   },
   created() {
@@ -67,6 +54,8 @@ export default {
 
       this.getPicList()
     })
+  },
+  mounted() {
   },
   methods: {
     submit() {
@@ -88,38 +77,55 @@ export default {
       }).then(res => {
         const newArr = res.data.introduce_pic.map(item => { return { url: item } })
         this.filePic = newArr
+        if (this.filePic.length >= 10) {
+          document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'none'
+        } else {
+          document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'inline-block'
+        }
       })
     },
     handleExceed(files, fileList) {
       this.$message.warning(`当前限制选择 10 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
-    deletePic() {
-      deleteIntroducePic({
-        introduce_pic: this.fileUrl,
-        id: this.listQuery.product_id
-      }).then(res => {
-        if (res.code === 1000) {
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-        } else {
-          this.$message({
-            message: res.message,
-            type: 'success'
-          })
-        }
+    beforeRemove(file, fileList) {
+      this.$confirm('删除后将不可恢复。', '确定删除？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteIntroducePic({
+          introduce_pic: file.url,
+          id: this.listQuery.product_id
+        }).then(res => {
+          if (res.code === 1000) {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.filePic.length--
+            this.getPicList()
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'success'
+            })
+          }
+        })
+      }).catch(() => {
       })
+      return false
     },
     handleRemove(file, fileList) {
-      this.centerDialogVisible = true
-      this.fileUrl = file.url
+      console.log(fileList, '删除成功')
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
     handleAvatarSuccess(file, fileList) {
+      if (fileList.length >= 10) {
+        document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'none'
+      }
       fileToBase64(file, (base64) => {
         this.dialogImageUrl.push(base64)
       })
