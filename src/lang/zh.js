@@ -4,7 +4,7 @@ export default {
     vision: '视觉',
     visionBasic: '基本信息',
     productHighlight: '产品亮点',
-    latestNews: '最新咨询',
+    latestNews: '最新资讯',
     case: '成功案例',
     specialPoint: '专家观点',
     introduction: '简述',

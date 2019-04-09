@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" class="add-latest-news" @click="addContent">添加咨询</el-button>
+    <el-button type="primary" class="add-latest-news" @click="addContent">{{ addTitle }}</el-button>
 
     <el-dialog
       title="确定删除？"
@@ -28,7 +28,7 @@
               <span>{{ searchInfo.author }}</span>
             </div>
           </div>
-          <div v-if="sourceTitle" class="sourceTitle">RSS<i />{{ weChatTitle }}</div>
+          <div v-if="sourceTitle" class="sourceTitle">{{ weChatTitle }}</div>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -39,7 +39,7 @@
 
     <el-tabs v-model="activeName" class="container-tabs" @tab-click="handleClick">
       <el-tab-pane label="资讯管理" name="first">资讯管理</el-tab-pane>
-      <el-tab-pane label="内容管理" name="second">内容管理</el-tab-pane>
+      <el-tab-pane label="内容源管理" name="second">内容源管理</el-tab-pane>
     </el-tabs>
 
     <el-table v-if="activeName === 'first'" v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
@@ -142,12 +142,18 @@ export default {
       placeholder: '',
       sourceId: '',
       centerDialogVisible: false,
-      item: {}
+      item: {},
+      addTitle: '添加资讯'
     }
   },
   watch: {
     'activeName'() {
       this.getList()
+      if (this.activeName === 'first') {
+        this.addTitle = '添加资讯'
+      } else if (this.activeName === 'second') {
+        this.addTitle = '添加内容源'
+      }
     }
   },
   created() {
