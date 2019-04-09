@@ -77,7 +77,6 @@ export default {
       }).then(res => {
         const newArr = res.data.introduce_pic.map(item => { return { url: item } })
         this.filePic = newArr
-        console.log(this.filePic.length, 'filePic长度')
         if (this.filePic.length >= 10) {
           document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'none'
         } else {
@@ -105,7 +104,6 @@ export default {
             })
             this.filePic.length--
             this.getPicList()
-            console.log(this.filePic.length, '删除之后filePic长度')
           } else {
             this.$message({
               message: res.message,
