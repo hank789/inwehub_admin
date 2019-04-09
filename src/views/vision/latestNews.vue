@@ -171,7 +171,7 @@ export default {
         this.placeholder = '输入文章链接'
       } else if (this.activeName === 'second') {
         this.title = '添加内容源'
-        this.placeholder = '请输入公众号名称或RSS链接'
+        this.placeholder = '请输入公众号名称或微信号'
       }
     },
     search() {
