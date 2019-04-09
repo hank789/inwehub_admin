@@ -260,7 +260,7 @@ export default {
         this.list.splice(index, 1)
         if (res.code === 1000) {
           this.$message({
-            message: '提交成功',
+            message: '删除成功',
             type: 'success'
           })
           this.centerDialogVisible = false

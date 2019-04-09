@@ -3,6 +3,19 @@
   <div class="app-container">
     <el-button type="primary" @click="dialogFormVisible = true">添加案例</el-button>
 
+    <el-dialog
+      title="确定删除？"
+      :visible.sync="centerDialogVisible"
+      width="30%"
+      center
+    >
+      <span>删除后将不可恢复。</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="deleteNews">确 定</el-button>
+      </span>
+    </el-dialog>
+
     <el-dialog title="添加案例" :visible.sync="dialogFormVisible">
 
       <el-form ref="form" :model="form" :rules="formRules" label-position="top">
@@ -145,7 +158,9 @@ export default {
       dialogVisible: false,
       imageName: '',
       upDate: false,
-      caseId: ''
+      caseId: '',
+      centerDialogVisible: false,
+      item: {}
     }
   },
   watch: {
@@ -190,6 +205,22 @@ export default {
       this.upDate = true
       this.caseId = item.id
     },
+    deleteNews() {
+      updateCaseStatus({
+        case_id: this.item.id,
+        status: 3
+      }).then(res => {
+        var index = this.list.indexOf(this.item)
+        this.list.splice(index, 1)
+        if (res.code === 1000) {
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+          this.centerDialogVisible = false
+        }
+      })
+    },
     selectTrigger(item, num) {
       if (num === 1) {
         updateCaseStatus({
@@ -200,19 +231,8 @@ export default {
         })
       }
       if (num === 2) {
-        updateCaseStatus({
-          case_id: item.id,
-          status: 3
-        }).then(res => {
-          var index = this.list.indexOf(item)
-          this.list.splice(index, 1)
-          if (res.code === 1000) {
-            this.$message({
-              message: '提交成功',
-              type: 'success'
-            })
-          }
-        })
+        this.centerDialogVisible = true
+        this.item = item
       }
     },
     handleChange(file) {
