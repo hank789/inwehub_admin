@@ -104,7 +104,8 @@ export default {
         yAxis: {
           axisTick: {
             show: false
-          }
+          },
+          minInterval: 1
         },
         legend: {
           data: []
