@@ -33,10 +33,10 @@
         <el-radio v-model="radio" label="image">图片</el-radio>
 
         <el-form-item class="marginTop" prop="linkName" label="" :label-width="formLabelWidth">
-          <el-input v-if="radio === 'link'" v-model="form.linkUrl" placeholder="输入案例链接" />
+          <el-input v-if="radio === 'link'" v-model="form.linkUrl" placeholder="输入案例链接,当前仅支持公众号文章链接" />
         </el-form-item>
 
-        <el-form-item v-if="radio === 'pdf' || radio === 'image'" label="">
+        <el-form-item v-if="radio === 'pdf'" label="">
           <el-upload
             class="upload-demo"
             action="''"
@@ -51,6 +51,10 @@
           >
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
+        </el-form-item>
+
+        <el-form-item v-if="radio === 'image'">
+          <Upload v-model="caseImg" style="width:200px;height:200px;" :placeholder="'添加案例封面<br/>尺寸200px*200px<br/>2M以内'" />
         </el-form-item>
 
       </el-form>
@@ -100,6 +104,7 @@ import Pagination from '@/components/Pagination' // Secondary package based on e
 import Sortable from 'sortablejs'
 import { fileToBase64 } from '@/utils/image'
 import Upload from '@/components/Upload/singleImage2'
+import Vue from 'vue'
 
 export default {
   name: 'ArticleList',
@@ -152,12 +157,13 @@ export default {
       upDate: false,
       caseId: '',
       centerDialogVisible: false,
-      item: {}
+      item: {},
+      caseImg: ''
     }
   },
   watch: {
     'radio'() {
-      this.fileList = []
+      // this.fileList = []
       this.form.linkUrl = ''
     }
   },
@@ -196,6 +202,17 @@ export default {
       this.radio = item.type
       this.upDate = true
       this.caseId = item.id
+      this.caseImg = item.link_url
+      if ( this.radio === 'pdf') {
+        this.fileList = [
+          {
+            name: item.link_url,
+            url: item.link_url
+          }
+        ]
+      } else {
+        this.fileList = []
+      }
     },
     deleteNews() {
       updateCaseStatus({
@@ -232,6 +249,7 @@ export default {
         this.form.imageUrl = base64
         this.imageName = file.name
       })
+      console.log(file, '文件')
     },
     handleRemove(file, fileList) {
       console.log(file, fileList)
@@ -264,7 +282,7 @@ export default {
     submitCase() {
       var file = ''
       if (this.radio === 'image') {
-        file = this.form.imageUrl
+        file = this.caseImg
       } else if (this.radio === 'pdf') {
         file = {
           'name': this.imageName,
@@ -279,7 +297,7 @@ export default {
           })
           return false
         }
-        if (this.radio === 'image' && !this.form.imageUrl) {
+        if (this.radio === 'image' && !this.caseImg) {
           this.$message({
             message: '请上传案例图片',
             type: 'error'
