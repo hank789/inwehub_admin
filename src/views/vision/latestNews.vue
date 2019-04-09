@@ -20,7 +20,7 @@
         <el-form-item label="" :label-width="formLabelWidth">
           <el-input v-model="form.name" autocomplete="off" :placeholder="placeholder" />
           <div class="search" @click="search">搜索</div>
-          <div class="urlInfoWrapper" v-if="linkUrl">
+          <div v-if="linkUrl" class="urlInfoWrapper">
             <div class="urlName">{{ searchInfo.title }}</div>
             <div class="bottomInfo">
               <span>{{ searchInfo.date }}</span>
@@ -28,7 +28,7 @@
               <span>{{ searchInfo.author }}</span>
             </div>
           </div>
-          <div class="sourceTitle" v-if="sourceTitle">RSS<i />{{ weChatTitle }}</div>
+          <div v-if="sourceTitle" class="sourceTitle">RSS<i />{{ weChatTitle }}</div>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -42,8 +42,8 @@
       <el-tab-pane label="内容管理" name="second">内容管理</el-tab-pane>
     </el-tabs>
 
-    <el-table v-loading="listLoading" v-if="activeName === 'first'" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="标题"  min-width="440px">
+    <el-table v-if="activeName === 'first'" v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
+      <el-table-column align="center" label="标题" min-width="440px">
         <template slot-scope="scope">
           <span>{{ scope.row.title }}</span>
         </template>
@@ -67,7 +67,7 @@
       </el-table-column>
     </el-table>
 
-    <el-table v-loading="listLoading" v-if="activeName === 'second'" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
+    <el-table v-if="activeName === 'second'" v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="源名称" min-width="300px">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
@@ -145,17 +145,17 @@ export default {
       item: {}
     }
   },
+  watch: {
+    'activeName'() {
+      this.getList()
+    }
+  },
   created() {
     this.$store.dispatch('product/getProductInfo', (product) => {
       this.listQuery.product_id = product.id
 
       this.getList()
     })
-  },
-  watch: {
-    'activeName'() {
-      this.getList()
-    }
   },
   methods: {
     addContent() {
