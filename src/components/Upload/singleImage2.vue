@@ -13,7 +13,7 @@
 
       <div class="image-prepare">
         <svg-icon icon-class="camera" />
-        <div class="image-desc" v-html="placeholder"></div>
+        <div class="image-desc" v-html="placeholder" />
       </div>
 
       <div v-show="imageUrl.length>0" class="image-preview">
@@ -30,7 +30,6 @@
 </template>
 
 <script>
-import { getToken } from '@/api/qiniu'
 import { fileToBase64 } from '@/utils/image'
 
 export default {
@@ -67,9 +66,9 @@ export default {
       this.$emit('input', val)
     },
     handleImageSuccess(file) {
-      const isLt2M = file.size / 1024 / 1024 < 2;
+      const isLt2M = file.size / 1024 / 1024 < 2
       if (!isLt2M) {
-        this.$message.error('上传图片大小不能超过 2MB!');
+        this.$message.error('上传图片大小不能超过 2MB!')
         return
       }
 
@@ -98,7 +97,6 @@ export default {
     justify-content: center;
     flex-direction:column;
     background:rgba(247,251,254,1);
-
 
     .svg-icon{
       font-size:39px;

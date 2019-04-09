@@ -47,13 +47,10 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
-import LangSelect from '@/components/LangSelect'
-import SocialSign from './socialsignin'
-import { setToken } from '@/utils/auth'
 
 export default {
   name: 'Login',
-  components: { LangSelect, SocialSign },
+  components: {},
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
@@ -106,8 +103,8 @@ export default {
     }
   },
   created() {
-//    var realLogin = process.env.VUE_APP_MASTER_URL + '/login'
-//    window.location.href = realLogin
+    //    var realLogin = process.env.VUE_APP_MASTER_URL + '/login'
+    //    window.location.href = realLogin
     // window.addEventListener('storage', this.afterQRScan)
   },
   destroyed() {

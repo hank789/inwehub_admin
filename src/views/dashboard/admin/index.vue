@@ -20,7 +20,7 @@
           <div v-loading="!lineChartThirtyData.isInit">
             <div class="totalCount">{{ lineChartThirtyData.totalCount }}<span>浏览量(次)</span></div>
             <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-              <line-chart :chart-data="lineChartThirtyData" v-if="lineChartThirtyData.isInit"/>
+              <line-chart v-if="lineChartThirtyData.isInit" :chart-data="lineChartThirtyData" />
             </el-row>
           </div>
         </el-tab-pane>
@@ -74,11 +74,11 @@ export default {
     })
   },
   methods: {
-    getLineChartData (type) {
+    getLineChartData(type) {
       let container = this.lineChartData
       let startTime = getSevenDayBeforeTimestamp() / 1000
       console.log('type', type)
-      if (type == 'thirty') {
+      if (type === 'thirty') {
         container = this.lineChartThirtyData
         startTime = getThirtyDayBeforeTimestamp() / 1000
       }
@@ -98,9 +98,6 @@ export default {
           container.totalCount += list[i].value
         }
       })
-    },
-    handleSetLineChartData(type) {
-      this.lineChartData = lineChartData[type]
     },
     handleClick(tab, event) {
       this.getLineChartData(tab.name)
