@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import { caseList, storeCase, updateCaseStatus, updateCase } from '@/api/product'
+import { caseList, storeCase, updateCaseStatus, updateCase, sortCase } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sortable from 'sortablejs'
 import { fileToBase64 } from '@/utils/image'
@@ -385,11 +385,26 @@ export default {
           // Detail see : https://github.com/RubaXa/Sortable/issues/1012
         },
         onEnd: evt => {
-          const targetRow = this.list.splice(evt.oldIndex, 1)[0]
+          const targetRow = this.list.splice(evt.newIndex, 1)[0]
+          console.log(targetRow, '交换排序targetRow')
           this.list.splice(evt.newIndex, 0, targetRow)
           // for show the changes, you can delete in you code
-          const tempIndex = this.newList.splice(evt.oldIndex, 1)[0]
+          const tempIndex = this.list.splice(evt.oldIndex, 1)[0]
           this.newList.splice(evt.newIndex, 0, tempIndex)
+          console.log(tempIndex, '被交换排序tempIndex')
+          sortCase({
+            case_id: targetRow.id,
+            to_case_id: tempIndex.id
+          }).then(res => {
+            if (res.code !== 1000) {
+              this.$message({
+                message: res.message,
+                type: 'error'
+              })
+              return false
+            }
+            this.getList()
+          })
         }
       })
     },
