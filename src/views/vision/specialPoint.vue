@@ -18,7 +18,8 @@
     <el-dialog title="添加专家观点" :visible.sync="dialogFormVisible">
       <el-form ref="form" :model="form" :rules="formRules" label-position="top">
         <el-form-item label="" prop="dialogImageUrl">
-          <el-upload
+          <Upload v-model="form.dialogImageUrl" style="width:300px;height:200px;" :placeholder="'添加专家头像<br/>尺寸200px*200px<br/>2M以内'" />
+          <!-- <el-upload
             class="avatar-uploader container-pointImg"
             action="''"
             :auto-upload="false"
@@ -29,16 +30,17 @@
           >
             <img v-if="form.dialogImageUrl" :src="form.dialogImageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon" />
-          </el-upload>
+          </el-upload> -->
+
         </el-form-item>
         <el-form-item label="专家姓名" prop="name" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off" />
+          <el-input v-model="form.name" placeholder="输入专家姓名" autocomplete="off" />
         </el-form-item>
         <el-form-item label="专家职位" prop="job" :label-width="formLabelWidth">
-          <el-input v-model="form.job" autocomplete="off" />
+          <el-input v-model="form.job" placeholder="输入专家职位" autocomplete="off" />
         </el-form-item>
         <el-form-item label="观点内容" prop="content" :label-width="formLabelWidth">
-          <el-input v-model="form.content" autocomplete="off" />
+          <el-input type="textarea" :rows="8" placeholder="输入案例概述" v-model="form.content"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -86,10 +88,14 @@ import { ideaList, updateIdeaStatus, updateIdea, storeIdea } from '@/api/product
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sortable from 'sortablejs'
 import { fileToBase64 } from '@/utils/image'
+import Upload from '@/components/Upload/singleImage2'
 
 export default {
   name: 'ArticleList',
-  components: { Pagination },
+  components: {
+    Pagination,
+    Upload
+  },
   filters: {
     statusFilter(status) {
       const statusMap = {

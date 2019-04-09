@@ -20,7 +20,7 @@
 
       <el-form ref="form" :model="form" :rules="formRules" label-position="top">
 
-        <Upload v-model="form.dialogImageUrl" style="width:300px;height:200px;" :placeholder="'添加产品Logo<br/>尺寸200px*200px<br/>2M以内'" />
+        <Upload v-model="form.dialogImageUrl" style="width:300px;height:200px;" :placeholder="'添加案例封面<br/>尺寸200px*200px<br/>2M以内'" />
 
         <el-form-item label="案例名称" prop="name" :label-width="formLabelWidth">
           <el-input v-model="form.name" placeholder="输入案例名称" autocomplete="off" />
@@ -103,7 +103,10 @@ import Upload from '@/components/Upload/singleImage2'
 
 export default {
   name: 'ArticleList',
-  components: { Pagination },
+  components: {
+    Pagination,
+    Upload
+  },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -151,9 +154,6 @@ export default {
       centerDialogVisible: false,
       item: {}
     }
-  },
-  components: {
-    Upload
   },
   watch: {
     'radio'() {
