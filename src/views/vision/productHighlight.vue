@@ -198,6 +198,7 @@ export default {
   .avatar-image .el-upload-list li {
     width: 266px;
     height: 399px;
+    border: none;
   }
   .avatar-image .el-upload-list li img {
     object-fit: cover;
