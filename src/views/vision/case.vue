@@ -76,8 +76,10 @@
       <el-table-column min-width="753px" align="center" label="">
         <template slot-scope="scope">
           <div class="container-case-info">
-            <div class="info-name">{{ scope.row.title }}</div>
-            <div class="info-describe">{{ scope.row.desc }}</div>
+            <a :href="scope.row.link_url" target="_blank">
+              <div class="info-name">{{ scope.row.title }}</div>
+              <div class="info-describe">{{ scope.row.desc }}</div>
+            </a>
           </div>
         </template>
       </el-table-column>
