@@ -61,7 +61,7 @@
       <el-table-column min-width="753px" align="center" label="">
         <template slot-scope="scope">
           <div class="container-case-info">
-            <div class="info-name">{{ scope.row.name }}</div>
+            <div class="info-name">{{ scope.row.name }} <i></i> {{ scope.row.title }}</div>
             <div class="info-describe">{{ scope.row.content }}</div>
           </div>
         </template>
@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { ideaList, updateIdeaStatus, updateIdea, storeIdea } from '@/api/product'
+import { ideaList, updateIdeaStatus, updateIdea, storeIdea, sortIdea } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sortable from 'sortablejs'
 import { fileToBase64 } from '@/utils/image'
@@ -290,9 +290,24 @@ export default {
         onEnd: evt => {
           const targetRow = this.list.splice(evt.oldIndex, 1)[0]
           this.list.splice(evt.newIndex, 0, targetRow)
-          // for show the changes, you can delete in you code
-          const tempIndex = this.newList.splice(evt.oldIndex, 1)[0]
+          console.log(targetRow, '交换排序targetRow')
+
+          const tempIndex = this.list.splice(evt.oldIndex, 1)[0]
           this.newList.splice(evt.newIndex, 0, tempIndex)
+          console.log(tempIndex, '被交换排序tempIndex')
+          sortIdea({
+            idea_id: targetRow.id,
+            to_idea_id: tempIndex.id
+          }).then(res => {
+            if (res.code !== 1000) {
+              this.$message({
+                message: res.message,
+                type: 'error'
+              })
+              return false
+            }
+            this.getList()
+          })
         }
       })
     },
@@ -334,6 +349,15 @@ export default {
     .info-name {
       color: #4A5F7B;
       font-family:PingFangSC-Medium;
+      i {
+        width: 1px;
+        height: 12px;
+        margin: 0 10px;
+        position: relative;
+        top: 2px;
+        background: #E0E8EF;
+        display: inline-block;
+      }
     }
     .info-describe {
       color: #7C8EA6;
