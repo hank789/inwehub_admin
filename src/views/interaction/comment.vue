@@ -15,7 +15,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column min-width="753px" label="">
+      <el-table-column min-width="100%" label="">
         <template slot-scope="">
           <div class="container-case-info">
             <div class="info-name">路非非 <i /> 4.3分</div>
@@ -32,16 +32,13 @@
             </el-input>
             <el-button class="submit" type="primary">发布</el-button>
           </div>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="" width="320">
-        <template slot-scope="scope">
-          <el-row>
-            <el-checkbox :true-label="1" :false-label="0" @change="selectTrigger(scope.row, 1)">加精</el-checkbox>
-            <el-button type="primary" icon="el-icon-edit" @click="editPonit(scope.row)" />
-            <el-button type="primary" icon="el-icon-delete" @click="selectTrigger(scope.row, 2)" />
-          </el-row>
+          <div class="operation">
+            <el-row>
+              <el-checkbox :true-label="1" :false-label="0" @change="selectTrigger(scope.row, 1)">加精</el-checkbox>
+              <el-button type="primary" size="small" icon="el-icon-edit" @click="editPonit(scope.row)" />
+              <el-button type="primary" size="small" icon="el-icon-delete" @click="selectTrigger(scope.row, 2)" />
+            </el-row>
+          </div>
         </template>
       </el-table-column>
 
@@ -137,6 +134,14 @@ export default {
       margin-top: 10px;
     }
   }
+  .operation {
+    position: absolute;
+    top: 0;
+    right: 15px;
+  }
+  .pagination-container {
+    text-align: center;
+  }
 </style>
 <style>
   .searchWrapper .el-input-group {
@@ -145,5 +150,12 @@ export default {
   }
   .min-table .el-table_1_column_1, .min-table .el-table_1_column_3 {
     vertical-align: top;
+  }
+  .min-table .cell {
+    position: relative;
+    padding-top: 4px;
+  }
+  .operation .el-checkbox {
+    margin-right: 10px;
   }
 </style>
