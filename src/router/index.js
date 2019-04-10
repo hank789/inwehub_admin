@@ -181,7 +181,18 @@ export const asyncRoutes = [
           title: 'userAnalyze',
           roles: ['admin']
         }
-      }]
+      },
+      {
+        path: '/analyze/userInfo',
+        hidden: true,
+        component: () => import('@/views/analyze/userInfo'),
+        name: 'userInfo',
+        meta: {
+          title: 'userInfo',
+          roles: ['admin']
+        }
+      }
+    ]
   },
   { path: '*', redirect: '/404', hidden: true }
 ]
