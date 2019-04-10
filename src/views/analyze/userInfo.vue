@@ -1,5 +1,18 @@
 <template>
   <div class="app-container">
+
+    <el-dialog title="添加标签" :visible.sync="dialogFormVisible">
+      <el-form :model="form" class="marginLight">
+        <el-form-item label="" :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off" placeholder="输入标签名称"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
+
     <div class="userInfoWrapper">
       <div class="info">
         <div class="avatar">
@@ -14,18 +27,13 @@
         <span>高度关注<i class="el-icon-close"></i></span>
         <span>高度关注<i class="el-icon-close"></i></span>
 
-        <span class="addTags">添加标签</span>
+        <span class="addTags" @click="dialogFormVisible = true">添加标签</span>
       </div>
     </div>
 
     <div class="title">访问记录</div>
 
     <el-table v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
-      <el-table-column min-width="400px" align="" label="昵称">
-        <template slot-scope="">
-          <span>张小白</span>
-        </template>
-      </el-table-column>
       <el-table-column width="200px" align="" label="访问页面">
         <template slot-scope="">
           <span>评论</span>
@@ -36,7 +44,7 @@
           <span>00:08</span>
         </template>
       </el-table-column>
-      <el-table-column width="140px" align="" label="访问时间">
+      <el-table-column min-width="140px" align="" label="访问时间">
         <template slot-scope="">
           <span style="color: #03AEF9">2019.02.18 18:00</span>
         </template>
@@ -60,7 +68,12 @@ export default {
       listQuery: {
         page: 1,
         product_id: ''
-      }
+      },
+      dialogFormVisible: false,
+      form: {
+        name: ''
+      },
+      formLabelWidth: '120px'
     }
   },
   components: {
@@ -159,5 +172,10 @@ export default {
   }
   .pagination-container {
     text-align: center;
+  }
+</style>
+<style>
+  .marginLight .el-form-item__content {
+    margin-left: 0 !important;
   }
 </style>
