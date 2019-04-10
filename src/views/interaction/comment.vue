@@ -149,7 +149,7 @@ export default {
     float: right;
   }
   .min-table .el-table_1_column_1, .min-table .el-table_1_column_3 {
-    vertical-align: top;
+    vertical-align: top !important;
   }
   .min-table .cell {
     position: relative;
