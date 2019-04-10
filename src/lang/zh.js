@@ -2,6 +2,10 @@ export default {
   route: {
     dashboard: '首页',
     vision: '视觉',
+    interaction: '互动',
+    analyze: '分析',
+    userAnalyze: '用户分析',
+    commentManager: '点评管理',
     visionBasic: '基本信息',
     productHighlight: '产品亮点',
     latestNews: '最新资讯',
