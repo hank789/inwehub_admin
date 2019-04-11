@@ -8,7 +8,7 @@
     <el-table v-if="activeName === 'first'" v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
       <el-table-column align="" label="头像" min-width="80px">
         <template slot-scope="scope">
-          <router-link class="avatarImg" :to="'/#/analyze/userInfo?id=' + scope.row.oauth_id" target="_blank">
+          <router-link class="avatarImg" :to="'/analyze/userInfo?id=' + scope.row.oauth_id" target="_blank">
             <img :src="scope.row.avatar" alt="">
           </router-link>
         </template>
@@ -43,9 +43,9 @@
     <el-table v-if="activeName === 'second'" v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
       <el-table-column align="" label="头像" min-width="80px">
         <template slot-scope="scope">
-          <a class="avatarImg" :href="scope.row.link_url" target="_blank">
+          <router-link class="avatarImg" :to="'/analyze/userInfo?id=' + scope.row.user.oauth_id" target="_blank">
             <img :src="scope.row.user.avatar" alt="">
-          </a>
+          </router-link>
         </template>
       </el-table-column>
       <el-table-column min-width="400px" align="" label="昵称">
