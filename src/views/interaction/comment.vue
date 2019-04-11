@@ -22,7 +22,7 @@
             <div class="info-describe">阿里云CDN的价格相对而言比较低，而且服务也不错，算得上是性价比很高的cdn提供商了。还是推荐大家去使用的。算得上是性价比很高的cdn提供商了。还是推荐大家去使用的。</div>
             <div class="time">2019.02.18 18:00</div>
           </div>
-          <div class="commentInput">
+          <div class="commentInput" v-if="showCommentInput">
             <el-input
               type="textarea"
               :rows="5"
@@ -35,7 +35,7 @@
           <div class="operation">
             <el-row>
               <el-checkbox :true-label="1" :false-label="0" @change="selectTrigger(scope.row, 1)">加精</el-checkbox>
-              <el-button type="primary" size="small" icon="el-icon-edit" @click="editPonit(scope.row)" />
+              <el-button type="primary" size="small" icon="el-icon-edit" @click="" />
               <el-button type="primary" size="small" icon="el-icon-delete" @click="selectTrigger(scope.row, 2)" />
             </el-row>
           </div>
@@ -62,7 +62,8 @@ export default {
         page: 1,
         product_id: ''
       },
-      commentContent: ''
+      commentContent: '',
+      showCommentInput: false
     }
   },
   components: {
