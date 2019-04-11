@@ -1,6 +1,19 @@
 <template>
   <div class="app-container">
 
+    <el-dialog
+      title="确定删除？"
+      :visible.sync="centerDialogVisible"
+      width="30%"
+      center
+    >
+      <span>删除后将不可恢复。</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="deleteTags">确 定</el-button>
+      </span>
+    </el-dialog>
+
     <el-dialog title="添加标签" :visible.sync="dialogFormVisible">
       <el-form :model="form" class="marginLight">
         <el-form-item label="" :label-width="formLabelWidth">
@@ -24,7 +37,7 @@
         </div>
       </div>
       <div class="tagsWrapper">
-        <span v-for="(tags, index) in list[0].user.tags" :key="index">{{ tags }}<i class="el-icon-close"></i></span>
+        <span v-for="(tags, index) in list[0].user.tags" :key="index" @click="delTags(tags)">{{ tags }}<i class="el-icon-close"></i></span>
         <span class="addTags" @click="dialogFormVisible = true">添加标签</span>
       </div>
     </div>
@@ -55,7 +68,7 @@
 </template>
 
 <script>
-import { userVisitList, addCustomUserTag } from '@/api/product'
+import { userVisitList, addCustomUserTag, delCustomUserTag } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 export default {
   data() {
@@ -72,7 +85,9 @@ export default {
       form: {
         tags: ''
       },
-      formLabelWidth: '120px'
+      formLabelWidth: '120px',
+      item: [],
+      centerDialogVisible: false
     }
   },
   components: {
@@ -86,6 +101,31 @@ export default {
     })
   },
   methods: {
+    deleteTags() {
+      delCustomUserTag({
+        oauth_id: this.listQuery.oauth_id,
+        tag: this.item
+      }).then(res => {
+        if (res.code === 1000) {
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+          this.centerDialogVisible = false
+          var index = this.list[0].user.tags.indexOf(this.item)
+          this.list[0].user.tags.splice(index, 1)
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'error'
+          })
+        }
+      })
+    },
+    delTags(item) {
+      this.item = item
+      this.centerDialogVisible = true
+    },
     addTags() {
       addCustomUserTag({
         oauth_id: this.listQuery.oauth_id,

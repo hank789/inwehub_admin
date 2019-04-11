@@ -330,3 +330,13 @@ export function userVisitList(query) {
     data: query
   })
 }
+/**
+ * 分析-删除用户标签
+ */
+export function delCustomUserTag(query) {
+  return request({
+    url: '/manage/product/delCustomUserTag',
+    method: 'post',
+    data: query
+  })
+}
