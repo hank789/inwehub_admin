@@ -8,25 +8,25 @@
     <el-table v-if="activeName === 'first'" v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
       <el-table-column align="" label="头像" min-width="80px">
         <template slot-scope="scope">
-          <a class="avatarImg" :href="scope.row.link_url" target="_blank">
-            <img src="../../assets/404_images/404_cloud.png" alt="">
+          <a class="avatarImg" :href="'/#/analyze/userInfo?id=' + scope.row.oauth_id" target="_blank">
+            <img :src="scope.row.avatar" alt="">
           </a>
         </template>
       </el-table-column>
       <el-table-column width="100px" align="" label="昵称">
-        <template slot-scope="">
-          <span>张小白</span>
+        <template slot-scope="scope">
+          <span>{{ scope.row.nickname }}</span>
         </template>
       </el-table-column>
       <el-table-column width="200px" align="" label="电话">
-        <template slot-scope="">
-          <span>18300624364</span>
+        <template slot-scope="scope">
+          <span>{{ scope.row.mobile }}</span>
         </template>
       </el-table-column>
       <el-table-column min-width="580px" align="" label="标签">
-        <template slot-scope="">
+        <template slot-scope="scope">
           <div class="tagsWrapper">
-            <span>高度关注</span><span>行业专家</span>
+            <span v-for="(tags, index) in scope.row.tags" :key="index">{{ tags }}</span>
           </div>
         </template>
       </el-table-column>
@@ -42,28 +42,28 @@
       <el-table-column align="" label="头像" min-width="80px">
         <template slot-scope="scope">
           <a class="avatarImg" :href="scope.row.link_url" target="_blank">
-            <img src="../../assets/404_images/404_cloud.png" alt="">
+            <img :src="scope.row.user.avatar" alt="">
           </a>
         </template>
       </el-table-column>
       <el-table-column min-width="400px" align="" label="昵称">
-        <template slot-scope="">
-          <span>张小白</span>
+        <template slot-scope="scope">
+          <span>{{ scope.row.user.nickname }}</span>
         </template>
       </el-table-column>
       <el-table-column width="200px" align="" label="访问页面">
-        <template slot-scope="">
-          <span>评论</span>
+        <template slot-scope="scope">
+          <span>{{ scope.row.page }}</span>
         </template>
       </el-table-column>
       <el-table-column width="280px" align="" label="停留时长">
-        <template slot-scope="">
-          <span>00:08</span>
+        <template slot-scope="scope">
+          <span>{{ scope.row.stay_time }}</span>
         </template>
       </el-table-column>
-      <el-table-column width="140px" align="" label="访问时间">
-        <template slot-scope="">
-          <span style="color: #03AEF9">2019.02.18 18:00</span>
+      <el-table-column width="240px" align="" label="访问时间">
+        <template slot-scope="scope">
+          <span>{{ scope.row.created_at }}</span>
         </template>
       </el-table-column>
 
@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { newsList, sourceList } from '@/api/product'
+import { visitedUserList, userVisitList } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 export default {
   data() {
@@ -98,17 +98,22 @@ export default {
       this.getList()
     })
   },
+  watch: {
+    'activeName'() {
+      this.getList()
+    }
+  },
   methods: {
     getList() {
       this.listLoading = true
       if (this.activeName === 'first') {
-        newsList(this.listQuery).then(response => {
+        visitedUserList(this.listQuery).then(response => {
           this.list = response.data.data
           this.total = response.data.total
           this.listLoading = false
         })
       } else if (this.activeName === 'second') {
-        sourceList(this.listQuery).then(response => {
+        userVisitList(this.listQuery).then(response => {
           this.list = response.data.data
           this.total = response.data.total
           this.listLoading = false

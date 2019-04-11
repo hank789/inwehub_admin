@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { newsList } from '@/api/product'
+import { visitedUserList } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 export default {
   data() {
@@ -67,7 +67,8 @@ export default {
       total: 0,
       listQuery: {
         page: 1,
-        product_id: ''
+        product_id: '',
+        oauth_id: this.$route.query.id
       },
       dialogFormVisible: false,
       form: {
@@ -89,7 +90,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      newsList(this.listQuery).then(response => {
+      visitedUserList(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
         this.listLoading = false
