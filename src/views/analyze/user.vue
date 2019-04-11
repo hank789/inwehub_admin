@@ -8,9 +8,9 @@
     <el-table v-if="activeName === 'first'" v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
       <el-table-column align="" label="头像" min-width="80px">
         <template slot-scope="scope">
-          <a class="avatarImg" :href="'/#/analyze/userInfo?id=' + scope.row.oauth_id" target="_blank">
+          <router-link class="avatarImg" :to="'/#/analyze/userInfo?id=' + scope.row.oauth_id" target="_blank">
             <img :src="scope.row.avatar" alt="">
-          </a>
+          </router-link>
         </template>
       </el-table-column>
       <el-table-column width="100px" align="" label="昵称">
@@ -31,8 +31,10 @@
         </template>
       </el-table-column>
       <el-table-column width="140px" align="" label="访问记录">
-        <template slot-scope="">
-          <span style="color: #03AEF9">查看访问记录</span>
+        <template slot-scope="scope">
+          <router-link target="_blank" :to="'/analyze/userInfo?id=' + scope.row.oauth_id">
+            <span style="color: #03AEF9">查看访问记录</span>
+          </router-link>
         </template>
       </el-table-column>
 
