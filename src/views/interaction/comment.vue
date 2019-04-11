@@ -1,42 +1,64 @@
 <template>
   <div class="app-container">
+
+    <el-dialog
+      title="确定删除？"
+      :visible.sync="centerDialogVisible"
+      width="30%"
+      center
+    >
+      <span>删除后将不可恢复。</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="deleteComment">确 定</el-button>
+      </span>
+    </el-dialog>
+
     <div class="searchWrapper">
       <el-input v-model="searchText" placeholder="请输入内容" class="input-with-select">
         <el-button slot="append" icon="el-icon-search" />
       </el-input>
     </div>
 
-    <el-table ref="dragTable" class="min-table" v-loading="listLoading" :data="list" :border="false" row-key="id" fit highlight-current-row style="width: 100%">
+    <el-table ref="dragTable" v-loading="listLoading" class="min-table" :data="list" :border="false" row-key="id" fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="" width="80">
-        <template slot-scope="">
+        <template slot-scope="scope">
           <div class="container-case-img">
-            <img src="../../assets/404_images/404.png" alt="">
+            <img :src="scope.row.user.avatar" alt="">
           </div>
         </template>
       </el-table-column>
 
       <el-table-column min-width="100%" label="">
-        <template slot-scope="">
+        <template slot-scope="scope">
           <div class="container-case-info">
-            <div class="info-name">路非非 <i /> 4.3分</div>
-            <div class="info-describe">阿里云CDN的价格相对而言比较低，而且服务也不错，算得上是性价比很高的cdn提供商了。还是推荐大家去使用的。算得上是性价比很高的cdn提供商了。还是推荐大家去使用的。</div>
-            <div class="time">2019.02.18 18:00</div>
+            <div class="info-name">{{ scope.row.user.nickname }} <i /> {{ scope.row.rate_star }}分</div>
+            <div class="info-describe">{{ scope.row.content }}</div>
+            <div class="time">{{ scope.row.created_at }}</div>
           </div>
-          <div class="commentInput" v-if="showCommentInput">
+          <div v-if="scope.row.showCommentInput" class="commentInput">
             <el-input
+              v-model="commentContent"
               type="textarea"
               :rows="5"
               resize="none"
               placeholder="请输回复入内容"
-              v-model="commentContent">
-            </el-input>
-            <el-button class="submit" type="primary">发布</el-button>
+            />
+            <el-button class="submit" type="primary" @click="submitComment">发布</el-button>
+          </div>
+          <div v-if="scope.row.official_reply" class="replyContent">
+            <div class="top">
+              <span>{{ scope.row.official_reply.author }}</span>
+              <div class="delete" @click="delOfficialReply(scope.row.official_reply.id)"><i class="el-icon-delete" style="color: #03AEF9; margin-right: 6px" />删除</div>
+            </div>
+            <div class="content">{{ scope.row.official_reply.content }}</div>
+            <div class="createdTime">{{ scope.row.official_reply.created_at }}</div>
           </div>
           <div class="operation">
             <el-row>
-              <el-checkbox :true-label="1" :false-label="0" @change="selectTrigger(scope.row, 1)">加精</el-checkbox>
-              <el-button type="primary" size="small" icon="el-icon-edit" @click="" />
-              <el-button type="primary" size="small" icon="el-icon-delete" @click="selectTrigger(scope.row, 2)" />
+              <el-checkbox v-model="scope.row.is_recommend" :true-label="1" :false-label="0" @change="recommend(scope.row)">加精</el-checkbox>
+              <el-button type="primary" size="small" icon="el-icon-edit" @click="reply(scope.row)" />
+              <el-button type="primary" size="small" icon="el-icon-delete" @click="delComment(scope.row)" />
             </el-row>
           </div>
         </template>
@@ -49,9 +71,12 @@
 </template>
 
 <script>
-import { ideaList } from '@/api/product'
+import { dianpingList, officialReplyDianping, delOfficialReplyDianping, recommendDianping, delDianping } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 export default {
+  components: {
+    Pagination
+  },
   data() {
     return {
       listLoading: true,
@@ -63,11 +88,10 @@ export default {
         product_id: ''
       },
       commentContent: '',
-      showCommentInput: false
+      showCommentInput: false,
+      centerDialogVisible: false,
+      item: {}
     }
-  },
-  components: {
-    Pagination
   },
   created() {
     this.$store.dispatch('product/getProductInfo', (product) => {
@@ -76,9 +100,93 @@ export default {
     })
   },
   methods: {
+    deleteComment() {
+      delDianping({
+        id: this.item.id
+      }).then(res => {
+        if (res.code === 1000) {
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+          this.centerDialogVisible = false
+          var index = this.list.indexOf(this.item)
+          this.list.splice(index, 1)
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'error'
+          })
+        }
+      })
+    },
+    delComment(item) {
+      this.item = item
+      this.centerDialogVisible = true
+    },
+    recommend(item) {
+      recommendDianping({
+        id: item.id
+      }).then(res => {
+        if (res.code === 1000) {
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          })
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'error'
+          })
+        }
+      })
+    },
+    delOfficialReply(id) {
+      delOfficialReplyDianping({
+        id: id
+      }).then(res => {
+        if (res.code === 1000) {
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+          this.getList()
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'error'
+          })
+        }
+      })
+    },
+    reply(item) {
+      this.item = item
+      this.$set(item, 'showCommentInput', item.showCommentInput ? !item.showCommentInput : true)
+    },
+    submitComment() {
+      officialReplyDianping({
+        id: this.item.id,
+        content: this.commentContent
+      }).then(res => {
+        if (res.code === 1000) {
+          this.$message({
+            message: '提交成功',
+            type: 'success'
+          })
+          this.commentContent = ''
+          this.$set(this.item, 'showCommentInput', this.item.showCommentInput ? !this.item.showCommentInput : true)
+          this.getList()
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'error'
+          })
+        }
+      })
+    },
     getList() {
       this.listLoading = true
-      ideaList(this.listQuery).then(response => {
+      dianpingList(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
         this.listLoading = false
@@ -142,6 +250,35 @@ export default {
   }
   .pagination-container {
     text-align: center;
+  }
+  .replyContent {
+    margin-top: 14px;
+    padding: 11px 20px;
+    border: 1px solid #E0E8EF;
+    .top {
+      display: flex;
+      justify-content: space-between;
+      span {
+        color: #4A5F7B;
+        font-size: 14px;
+        font-family:PingFangSC-Medium;
+      }
+      .delete {
+        color: #7C8EA6;
+        font-size: 14px;
+      }
+    }
+    .content {
+      color: #7C8EA6;
+      font-size: 14px;
+      line-height: 20px;
+      margin-top: 12px;
+    }
+    .createdTime {
+      color: #B3C2D5;
+      font-size: 14px;
+      margin-top: 6px;
+    }
   }
 </style>
 <style>
