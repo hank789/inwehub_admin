@@ -4,29 +4,27 @@
     <el-dialog title="添加标签" :visible.sync="dialogFormVisible">
       <el-form :model="form" class="marginLight">
         <el-form-item label="" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off" placeholder="输入标签名称"></el-input>
+          <el-input v-model="form.tags" autocomplete="off" placeholder="输入标签名称"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addTags">确 定</el-button>
       </div>
     </el-dialog>
 
     <div class="userInfoWrapper">
       <div class="info">
         <div class="avatar">
-          <img src="../../assets/404_images/404.png" alt="">
+          <img :src="list[0].user.avatar" alt="">
         </div>
         <div class="userInfo">
-          <div class="name">张小白</div>
-          <div class="phone"><i class="el-icon-phone"></i>18300624364</div>
+          <div class="name">{{ list[0].user.nickname }}</div>
+          <div class="phone"><i class="el-icon-phone"></i>{{ list[0].user.mobile }}</div>
         </div>
       </div>
       <div class="tagsWrapper">
-        <span>高度关注<i class="el-icon-close"></i></span>
-        <span>高度关注<i class="el-icon-close"></i></span>
-
+        <span v-for="(tags, index) in list[0].user.tags" :key="index">{{ tags }}<i class="el-icon-close"></i></span>
         <span class="addTags" @click="dialogFormVisible = true">添加标签</span>
       </div>
     </div>
@@ -35,18 +33,18 @@
 
     <el-table v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
       <el-table-column width="200px" align="" label="访问页面">
-        <template slot-scope="">
-          <span>评论</span>
+        <template slot-scope="scope">
+          <span>{{ scope.row.page }}</span>
         </template>
       </el-table-column>
       <el-table-column width="280px" align="" label="停留时长">
-        <template slot-scope="">
-          <span>00:08</span>
+        <template slot-scope="scope">
+          <span>{{ scope.row.stay_time }}</span>
         </template>
       </el-table-column>
       <el-table-column min-width="140px" align="" label="访问时间">
-        <template slot-scope="">
-          <span style="color: #03AEF9">2019.02.18 18:00</span>
+        <template slot-scope="scope">
+          <span style="color: #03AEF9">{{ scope.row.created_at }}</span>
         </template>
       </el-table-column>
 
@@ -57,7 +55,7 @@
 </template>
 
 <script>
-import { visitedUserList } from '@/api/product'
+import { userVisitList, addCustomUserTag } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 export default {
   data() {
@@ -72,7 +70,7 @@ export default {
       },
       dialogFormVisible: false,
       form: {
-        name: ''
+        tags: ''
       },
       formLabelWidth: '120px'
     }
@@ -88,9 +86,23 @@ export default {
     })
   },
   methods: {
+    addTags() {
+      addCustomUserTag({
+        oauth_id: this.listQuery.oauth_id,
+        tag: this.form.tags
+      }).then(res => {
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
+        this.form.tags = ''
+        this.dialogFormVisible = false
+        this.getList()
+      })
+    },
     getList() {
       this.listLoading = true
-      visitedUserList(this.listQuery).then(response => {
+      userVisitList(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
         this.listLoading = false
