@@ -17,7 +17,7 @@
     <el-dialog title="添加标签" :visible.sync="dialogFormVisible">
       <el-form :model="form" class="marginLight">
         <el-form-item label="" :label-width="formLabelWidth">
-          <el-input v-model="form.tags" autocomplete="off" placeholder="输入标签名称"></el-input>
+          <el-input v-model="form.tags" autocomplete="off" placeholder="输入标签名称" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -33,11 +33,11 @@
         </div>
         <div class="userInfo">
           <div class="name">{{ list[0].user.nickname }}</div>
-          <div class="phone"><i class="el-icon-phone"></i>{{ list[0].user.mobile }}</div>
+          <div class="phone"><i class="el-icon-phone" />{{ list[0].user.mobile }}</div>
         </div>
       </div>
       <div class="tagsWrapper">
-        <span v-for="(tags, index) in list[0].user.tags" :key="index" @click="delTags(tags)">{{ tags }}<i class="el-icon-close"></i></span>
+        <span v-for="(tags, index) in list[0].user.tags" :key="index" @click="delTags(tags)">{{ tags }}<i class="el-icon-close" /></span>
         <span class="addTags" @click="dialogFormVisible = true">添加标签</span>
       </div>
     </div>
@@ -71,6 +71,9 @@
 import { userVisitList, addCustomUserTag, delCustomUserTag } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 export default {
+  components: {
+    Pagination
+  },
   data() {
     return {
       listLoading: true,
@@ -89,9 +92,6 @@ export default {
       item: [],
       centerDialogVisible: false
     }
-  },
-  components: {
-    Pagination
   },
   created() {
     this.$store.dispatch('product/getProductInfo', (product) => {
