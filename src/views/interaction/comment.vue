@@ -16,7 +16,7 @@
 
     <div class="searchWrapper">
       <el-input v-model="searchText" placeholder="请输入内容" class="input-with-select">
-        <el-button slot="append" icon="el-icon-search" />
+        <el-button slot="append" icon="el-icon-search" @click="searchComment" />
       </el-input>
     </div>
 
@@ -85,7 +85,8 @@ export default {
       total: 0,
       listQuery: {
         page: 1,
-        product_id: ''
+        product_id: '',
+        search_word: ''
       },
       commentContent: '',
       showCommentInput: false,
@@ -183,6 +184,10 @@ export default {
           })
         }
       })
+    },
+    searchComment() {
+      this.listQuery.search_word = this.searchText
+      this.getList()
     },
     getList() {
       this.listLoading = true
