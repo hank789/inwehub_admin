@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <el-tabs v-model="activeName" class="container-tabs" @tab-click="handleClick">
-      <el-tab-pane label="用户列表" name="first"></el-tab-pane>
-      <el-tab-pane label="来访记录" name="second"></el-tab-pane>
+      <el-tab-pane label="用户列表" name="first" />
+      <el-tab-pane label="来访记录" name="second" />
     </el-tabs>
 
     <el-table v-if="activeName === 'first'" v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
@@ -78,6 +78,9 @@
 import { visitedUserList, userVisitList } from '@/api/product'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 export default {
+  components: {
+    Pagination
+  },
   data() {
     return {
       listLoading: true,
@@ -90,8 +93,10 @@ export default {
       activeName: 'first'
     }
   },
-  components: {
-    Pagination
+  watch: {
+    'activeName'() {
+      this.getList()
+    }
   },
   created() {
     this.$store.dispatch('product/getProductInfo', (product) => {
@@ -99,11 +104,6 @@ export default {
 
       this.getList()
     })
-  },
-  watch: {
-    'activeName'() {
-      this.getList()
-    }
   },
   methods: {
     getList() {

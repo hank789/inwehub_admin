@@ -40,7 +40,7 @@
           <el-input v-model="form.job" placeholder="输入专家职位" autocomplete="off" />
         </el-form-item>
         <el-form-item label="观点内容" prop="content" :label-width="formLabelWidth">
-          <el-input type="textarea" :rows="8" placeholder="输入案例概述" v-model="form.content"></el-input>
+          <el-input v-model="form.content" type="textarea" :rows="8" placeholder="输入案例概述" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -61,7 +61,7 @@
       <el-table-column min-width="753px" align="center" label="">
         <template slot-scope="scope">
           <div class="container-case-info">
-            <div class="info-name">{{ scope.row.name }} <i></i> {{ scope.row.title }}</div>
+            <div class="info-name">{{ scope.row.name }} <i /> {{ scope.row.title }}</div>
             <div class="info-describe">{{ scope.row.content }}</div>
           </div>
         </template>
