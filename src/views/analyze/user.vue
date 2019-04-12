@@ -13,7 +13,7 @@
           </router-link>
         </template>
       </el-table-column>
-      <el-table-column width="100px" align="" label="昵称">
+      <el-table-column width="300px" align="" label="昵称">
         <template slot-scope="scope">
           <span>{{ scope.row.nickname }}</span>
         </template>
@@ -23,7 +23,7 @@
           <span>{{ scope.row.mobile }}</span>
         </template>
       </el-table-column>
-      <el-table-column min-width="580px" align="" label="标签">
+      <el-table-column min-width="380px" align="" label="标签">
         <template slot-scope="scope">
           <div class="tagsWrapper">
             <span v-for="(tags, index) in scope.row.tags" :key="index">{{ tags }}</span>

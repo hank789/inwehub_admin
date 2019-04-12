@@ -57,7 +57,7 @@
       </el-table-column>
       <el-table-column min-width="140px" align="" label="访问时间">
         <template slot-scope="scope">
-          <span style="color: #03AEF9">{{ scope.row.created_at }}</span>
+          <span>{{ scope.row.created_at }}</span>
         </template>
       </el-table-column>
 
@@ -195,6 +195,7 @@ export default {
       margin-top: 38px;
       .addTags {
         color: #FFFFFF;
+        cursor: pointer;
         background: #576F8F;
         border: 1px solid #E0E8EF;
       }
