@@ -26,7 +26,7 @@
           <el-input v-model="form.name" placeholder="输入案例名称" autocomplete="off" />
         </el-form-item>
         <el-form-item label="案例概述" prop="desc" :label-width="formLabelWidth">
-          <el-input type="textarea" :rows="8" placeholder="输入案例概述" v-model="form.desc"></el-input>
+          <el-input v-model="form.desc" type="textarea" :rows="8" placeholder="输入案例概述" />
         </el-form-item>
         <el-radio v-model="radio" label="link">链接</el-radio>
         <el-radio v-model="radio" label="pdf">PDF文档</el-radio>
@@ -106,7 +106,6 @@ import Pagination from '@/components/Pagination' // Secondary package based on e
 import Sortable from 'sortablejs'
 import { fileToBase64 } from '@/utils/image'
 import Upload from '@/components/Upload/singleImage2'
-import Vue from 'vue'
 
 export default {
   name: 'ArticleList',
@@ -205,7 +204,7 @@ export default {
       this.upDate = true
       this.caseId = item.id
       this.caseImg = item.link_url
-      if ( this.radio === 'pdf') {
+      if (this.radio === 'pdf') {
         this.fileList = [
           {
             name: item.link_url,
