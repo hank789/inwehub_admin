@@ -93,7 +93,7 @@ export default {
         container.isInit = true
 
         for (var i in list) {
-          let ref_data = list[i].ref_date.split("")
+          const ref_data = list[i].ref_date.split('')
           ref_data.splice(4, 0, '.')
           ref_data.splice(7, 0, '.')
           container.xAxis.push(ref_data.join(''))

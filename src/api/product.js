@@ -250,3 +250,93 @@ export function fetchSourceInfo(query) {
     data: query
   })
 }
+/**
+ * 互动-删除官方回复
+ */
+export function delOfficialReplyDianping(query) {
+  return request({
+    url: '/manage/product/delOfficialReplyDianping',
+    method: 'post',
+    data: query
+  })
+}
+/**
+ * 互动-删除点评
+ */
+export function delDianping(query) {
+  return request({
+    url: '/manage/product/delDianping',
+    method: 'post',
+    data: query
+  })
+}
+/**
+ * 互动-加精点评
+ */
+export function recommendDianping(query) {
+  return request({
+    url: '/manage/product/recommendDianping',
+    method: 'post',
+    data: query
+  })
+}
+/**
+ * 互动-回复点评
+ */
+export function officialReplyDianping(query) {
+  return request({
+    url: '/manage/product/officialReplyDianping',
+    method: 'post',
+    data: query
+  })
+}
+/**
+ * 互动-点评列表
+ */
+export function dianpingList(query) {
+  return request({
+    url: '/manage/product/dianpingList',
+    method: 'post',
+    data: query
+  })
+}
+/**
+ * 分析-添加用户标签
+ */
+export function addCustomUserTag(query) {
+  return request({
+    url: '/manage/product/addCustomUserTag',
+    method: 'post',
+    data: query
+  })
+}
+/**
+ * 分析-用户列表
+ */
+export function visitedUserList(query) {
+  return request({
+    url: '/manage/product/visitedUserList',
+    method: 'post',
+    data: query
+  })
+}
+/**
+ * 分析-用户访问记录列表
+ */
+export function userVisitList(query) {
+  return request({
+    url: '/manage/product/userVisitList',
+    method: 'post',
+    data: query
+  })
+}
+/**
+ * 分析-删除用户标签
+ */
+export function delCustomUserTag(query) {
+  return request({
+    url: '/manage/product/delCustomUserTag',
+    method: 'post',
+    data: query
+  })
+}

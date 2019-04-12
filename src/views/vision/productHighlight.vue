@@ -3,8 +3,8 @@
     <div class="top-text">请上传统一尺寸的图片，否则以首张图片尺寸为准(限10张)</div>
 
     <el-upload
-      class="avatar-image"
       ref="foreignPersonUploadItem"
+      class="avatar-image"
       action="''"
       :auto-upload="false"
       multiple

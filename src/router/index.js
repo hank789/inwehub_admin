@@ -143,6 +143,57 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/interaction',
+    component: Layout,
+    redirect: '/interaction/comment',
+    alwaysShow: true, // will always show the root menu
+    meta: {
+      title: 'interaction',
+      roles: ['admin', 'editor']
+    },
+    children: [
+      {
+        path: '/interaction/comment',
+        component: () => import('@/views/interaction/comment'),
+        name: 'interactionComment',
+        meta: {
+          title: 'commentManager',
+          roles: ['admin']
+        }
+      }]
+  },
+  {
+    path: '/analyze',
+    component: Layout,
+    redirect: '/analyze/user',
+    alwaysShow: true, // will always show the root menu
+    meta: {
+      title: 'analyze',
+      roles: ['admin', 'editor']
+    },
+    children: [
+      {
+        path: '/analyze/user',
+        component: () => import('@/views/analyze/user'),
+        name: 'analyzeUser',
+        meta: {
+          title: 'userAnalyze',
+          roles: ['admin']
+        }
+      },
+      {
+        path: '/analyze/userInfo',
+        hidden: true,
+        component: () => import('@/views/analyze/userInfo'),
+        name: 'userInfo',
+        meta: {
+          title: 'userInfo',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]
 

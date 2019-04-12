@@ -45,7 +45,7 @@
     <el-table v-if="activeName === 'first'" v-loading="listLoading" class="container-table" :data="list" :border="false" fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="标题" min-width="440px">
         <template slot-scope="scope">
-          <a :href="scope.ro.link_url" target="_blank">
+          <a :href="scope.row.link_url" target="_blank">
             <span>{{ scope.row.title }}</span>
           </a>
         </template>
@@ -99,7 +99,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.perPage" @pagination="getList" />
   </div>
 </template>
 
@@ -132,7 +132,8 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        product_id: ''
+        product_id: '',
+        perPage: 20
       },
       checked: true,
       activeName: 'first',
