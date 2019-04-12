@@ -26,7 +26,7 @@
       </div>
     </el-dialog>
 
-    <div class="userInfoWrapper" v-if="list.length > 0">
+    <div v-if="list.length > 0" class="userInfoWrapper">
       <div class="info">
         <div class="avatar">
           <img :src="list[0].user.avatar" alt="">
