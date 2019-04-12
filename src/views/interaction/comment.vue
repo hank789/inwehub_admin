@@ -279,6 +279,7 @@ export default {
       .delete {
         color: #7C8EA6;
         font-size: 14px;
+        cursor: pointer;
       }
     }
     .content {
