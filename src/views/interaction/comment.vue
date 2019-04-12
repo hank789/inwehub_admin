@@ -114,6 +114,7 @@ export default {
             })
             this.centerDialogVisible = false
             this.getList()
+            this.officialReplyId = ''
           } else {
             this.$message({
               message: res.message,
