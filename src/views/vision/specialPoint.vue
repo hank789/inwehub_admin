@@ -79,7 +79,7 @@
 
     </el-table>
 
-    <pagination v-show="total>0" class="pagination-container" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total>0" class="pagination-container" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.perPage" @pagination="getList" />
   </div>
 </template>
 
@@ -127,7 +127,8 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        product_id: ''
+        product_id: '',
+        perPage: 20
       },
       sortable: null,
       oldList: [],

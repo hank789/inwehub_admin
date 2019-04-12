@@ -66,7 +66,7 @@
 
     </el-table>
 
-    <pagination v-show="total>0" class="pagination-container" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total>0" class="pagination-container" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.perPage" @pagination="getList" />
   </div>
 </template>
 
@@ -86,7 +86,8 @@ export default {
       listQuery: {
         page: 1,
         product_id: '',
-        search_word: ''
+        search_word: '',
+        perPage: 20
       },
       commentContent: '',
       showCommentInput: false,

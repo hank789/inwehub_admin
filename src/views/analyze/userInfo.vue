@@ -63,7 +63,7 @@
 
     </el-table>
 
-    <pagination v-show="total>0" class="pagination-container" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total>0" class="pagination-container" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.perPage" @pagination="getList" />
   </div>
 </template>
 
@@ -82,7 +82,8 @@ export default {
       listQuery: {
         page: 1,
         product_id: '',
-        oauth_id: this.$route.query.id
+        oauth_id: this.$route.query.id,
+        perPage: 20
       },
       dialogFormVisible: false,
       form: {
