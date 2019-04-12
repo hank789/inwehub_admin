@@ -91,7 +91,8 @@ export default {
       commentContent: '',
       showCommentInput: false,
       centerDialogVisible: false,
-      item: {}
+      item: {},
+      officialReplyId: ''
     }
   },
   created() {
@@ -102,24 +103,44 @@ export default {
   },
   methods: {
     deleteComment() {
-      delDianping({
-        id: this.item.id
-      }).then(res => {
-        if (res.code === 1000) {
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-          this.centerDialogVisible = false
-          var index = this.list.indexOf(this.item)
-          this.list.splice(index, 1)
-        } else {
-          this.$message({
-            message: res.message,
-            type: 'error'
-          })
-        }
-      })
+      if (this.officialReplyId) {
+        delOfficialReplyDianping({
+          id: this.officialReplyId
+        }).then(res => {
+          if (res.code === 1000) {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.centerDialogVisible = false
+            this.getList()
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'error'
+            })
+          }
+        })
+      } else {
+        delDianping({
+          id: this.item.id
+        }).then(res => {
+          if (res.code === 1000) {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.centerDialogVisible = false
+            var index = this.list.indexOf(this.item)
+            this.list.splice(index, 1)
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'error'
+            })
+          }
+        })
+      }
     },
     delComment(item) {
       this.item = item
@@ -143,22 +164,8 @@ export default {
       })
     },
     delOfficialReply(id) {
-      delOfficialReplyDianping({
-        id: id
-      }).then(res => {
-        if (res.code === 1000) {
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-          this.getList()
-        } else {
-          this.$message({
-            message: res.message,
-            type: 'error'
-          })
-        }
-      })
+      this.officialReplyId = id
+      this.centerDialogVisible = true
     },
     reply(item) {
       this.item = item
