@@ -26,7 +26,7 @@
       </div>
     </el-dialog>
 
-    <div class="userInfoWrapper">
+    <div class="userInfoWrapper" v-if="list.length > 0">
       <div class="info">
         <div class="avatar">
           <img :src="list[0].user.avatar" alt="">
@@ -77,7 +77,7 @@ export default {
   data() {
     return {
       listLoading: true,
-      list: null,
+      list: [],
       total: 0,
       listQuery: {
         page: 1,
