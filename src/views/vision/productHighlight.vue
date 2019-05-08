@@ -23,31 +23,33 @@
           </div>
         </li>
     </transition-group>
+
+      <el-upload
+        ref="foreignPersonUploadItem"
+        class="avatar-image"
+        action="''"
+        :auto-upload="false"
+        multiple
+        list-type="picture-card"
+        :on-change="handleAvatarSuccess"
+        :on-preview="handlePictureCardPreview"
+        :on-remove="handleRemove"
+        :file-list="dialogImageUrl"
+        :on-exceed="handleExceed"
+        :limit="10"
+        :show-file-list="false"
+        :before-remove="beforeRemove"
+      >
+        <div class="container-text">
+          <svg-icon icon-class="camera" />
+          <div>添加产品亮点图</div>
+          <div>推荐尺寸900px*1250px</div>
+        </div>
+      </el-upload>
     </div>
 
 
-    <el-upload
-      ref="foreignPersonUploadItem"
-      class="avatar-image"
-      action="''"
-      :auto-upload="false"
-      multiple
-      list-type="picture-card"
-      :on-change="handleAvatarSuccess"
-      :on-preview="handlePictureCardPreview"
-      :on-remove="handleRemove"
-      :file-list="dialogImageUrl"
-      :on-exceed="handleExceed"
-      :limit="10"
-      :show-file-list="false"
-      :before-remove="beforeRemove"
-    >
-      <div class="container-text">
-        <svg-icon icon-class="camera" />
-        <div>添加产品亮点图</div>
-        <div>推荐尺寸900px*1250px</div>
-      </div>
-    </el-upload>
+
 
 
     <el-dialog :visible.sync="dialogVisible" class="image-list">
@@ -229,7 +231,6 @@ export default {
 
 <style scoped lang="scss">
   .avatar-image {
-    margin: 6px 0 20px;
     display: inline-block;
     vertical-align: top;
   }
