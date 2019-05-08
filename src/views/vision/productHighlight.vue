@@ -3,26 +3,27 @@
     <div class="top-text">请上传统一尺寸的图片，否则以首张图片尺寸为准(限10张)</div>
 
     <div class="imageListWrapper">
-    <transition-group tag="ul"
-                      :class="[
-      'el-upload-list',
-      'el-upload-list--picture-card',
+      <transition-group
+        tag="ul"
+        :class="[
+          'el-upload-list',
+          'el-upload-list--picture-card',
 
-    ]"
-      name="el-list-test"
-    >
-        <li class="imageItem" v-for="(item, key) in dialogImageUrl" :key="item.url + key">
-          <ImageView :src="item.url"/>
+        ]"
+        name="el-list-test"
+      >
+        <li v-for="(item, key) in dialogImageUrl" :key="item.url + key" class="imageItem">
+          <ImageView :src="item.url" />
 
           <div class="itemOperation">
-              <span
-                  @click="removeImage(key)"
-                >
-              <i class="el-icon-delete"></i>
+            <span
+              @click="removeImage(key)"
+            >
+              <i class="el-icon-delete" />
             </span>
           </div>
         </li>
-    </transition-group>
+      </transition-group>
 
       <el-upload
         ref="foreignPersonUploadItem"
@@ -47,10 +48,6 @@
         </div>
       </el-upload>
     </div>
-
-
-
-
 
     <el-dialog :visible.sync="dialogVisible" class="image-list">
       <img width="100%" :src="dialogImageUrlReview" alt="">
@@ -82,18 +79,11 @@ export default {
       newList: []
     }
   },
-  created() {
-    this.$store.dispatch('product/getProductInfo', (product) => {
-      this.listQuery.product_id = product.id
-
-      this.getPicList()
-    })
-  },
   computed: {
     addData() {
-      let rs = []
+      const rs = []
       for (var i in this.dialogImageUrl) {
-        let item = this.dialogImageUrl[i]
+        const item = this.dialogImageUrl[i]
         if (item.isNew) {
           rs.push(item.url)
         }
@@ -101,10 +91,17 @@ export default {
       return rs
     }
   },
+  created() {
+    this.$store.dispatch('product/getProductInfo', (product) => {
+      this.listQuery.product_id = product.id
+
+      this.getPicList()
+    })
+  },
   mounted() {
   },
   methods: {
-    removeImage (index) {
+    removeImage(index) {
       this.$confirm('删除后将不可恢复。', '确定删除？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -119,7 +116,7 @@ export default {
               message: '删除成功',
               type: 'success'
             })
-            this.dialogImageUrl.splice(index, 1);
+            this.dialogImageUrl.splice(index, 1)
           } else {
             this.$message({
               message: res.message,
@@ -129,9 +126,6 @@ export default {
         })
       }).catch(() => {
       })
-    },
-    reLoad (event) {
-      reloadImage(event, 3)
     },
     submit() {
       updateIntroducePic({
@@ -159,7 +153,7 @@ export default {
         }
       })
     },
-    submitBtn () {
+    submitBtn() {
       this.$message({
         message: '提交成功',
         type: 'success'
@@ -288,7 +282,6 @@ export default {
           opacity: 0.7;
         }
       }
-
 
         img{
           width:100%;
