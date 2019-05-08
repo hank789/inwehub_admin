@@ -68,7 +68,7 @@
       <el-table-column align="center" label="" width="115">
         <template slot-scope="scope">
           <div class="container-case-img ">
-            <el-image :src="scope.row.cover_pic" fit="cover" lazy />
+            <ImageView :src="scope.row.cover_pic" />
             <!--<img :src="scope.row.cover_pic" alt="">-->
           </div>
         </template>

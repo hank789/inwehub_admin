@@ -53,7 +53,8 @@
       <el-table-column align="center" label="" width="115">
         <template slot-scope="scope">
           <div class="container-case-img">
-            <img :src="scope.row.avatar" alt="">
+            <ImageView :src="scope.row.avatar" />
+            <!--<img :src="scope.row.avatar" alt="">-->
           </div>
         </template>
       </el-table-column>
@@ -334,7 +335,6 @@ export default {
   .container-case-img {
     width: 90px;
     height: 60px;
-    background: pink;
     margin: 10px 0;
     img {
       width: 100%;
