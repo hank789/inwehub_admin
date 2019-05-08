@@ -24,12 +24,13 @@
       </div>
     </el-upload>
 
+
     <el-dialog :visible.sync="dialogVisible" class="image-list">
-      <img width="100%" :src="dialogImageUrl" alt="">
+      <img width="100%" :src="dialogImageUrlReview" alt="">
     </el-dialog>
 
     <el-row>
-      <el-button type="primary" @click="submit">保存</el-button>
+      <el-button type="primary" @click="submitBtn">保存</el-button>
     </el-row>
   </div>
 </template>
@@ -38,10 +39,12 @@
 import { getIntroducePic, updateIntroducePic, deleteIntroducePic, sortIntroducePic } from '@/api/product'
 import { fileToBase64 } from '@/utils/image'
 import Sortable from 'sortablejs'
+import { reSortArrByTwoElement } from '@/utils/array'
 export default {
   data: function() {
     return {
       dialogImageUrl: [],
+      dialogImageUrlReview: '',
       dialogVisible: false,
       listQuery: {
         product_id: ''
@@ -59,24 +62,37 @@ export default {
       this.getPicList()
     })
   },
+  computed: {
+    addData() {
+      let rs = []
+      for (var i in this.dialogImageUrl) {
+        let item = this.dialogImageUrl[i]
+        if (item.isNew) {
+          rs.push(item.url)
+        }
+      }
+      return rs
+    }
+  },
   mounted() {
   },
   methods: {
     submit() {
-      console.log(this.dialogImageUrl, '数据')
-      var imageUrlList = this.dialogImageUrl.filter(function(val) {
-        return val.url && val.url.indexOf('base64') >= 0
-      })
-      var imgList = imageUrlList.map(item => { return item.url })
-      console.log(imgList, '数据')
       updateIntroducePic({
         id: this.listQuery.product_id,
-        introduce_pic_arr: imgList
+        introduce_pic_arr: this.addData
       }).then(res => {
         if (res.code === 1000) {
-          this.$message({
-            message: '提交成功',
-            type: 'success'
+          getIntroducePic({
+            id: this.listQuery.product_id
+          }).then(res => {
+            const newArr = res.data.introduce_pic.map(item => { return { url: item } })
+            this.dialogImageUrl = newArr
+            if (this.dialogImageUrl.length >= 10) {
+              document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'none'
+            } else {
+              document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'inline-block'
+            }
           })
         } else {
           this.$message({
@@ -84,6 +100,12 @@ export default {
             type: 'error'
           })
         }
+      })
+    },
+    submitBtn () {
+      this.$message({
+        message: '提交成功',
+        type: 'success'
       })
     },
     getPicList() {
@@ -137,7 +159,7 @@ export default {
       console.log(fileList, '删除成功')
     },
     handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url
+      this.dialogImageUrlReview = file.url
       this.dialogVisible = true
     },
     handleAvatarSuccess(file, fileList) {
@@ -145,7 +167,8 @@ export default {
         document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'none'
       }
       fileToBase64(file, (base64) => {
-        this.dialogImageUrl.push({ url: base64 })
+        this.dialogImageUrl.push({ url: base64, isNew: true })
+        this.submit()
       })
     },
     setSort() {
@@ -158,10 +181,7 @@ export default {
           // Detail see : https://github.com/RubaXa/Sortable/issues/1012
         },
         onEnd: evt => {
-          const targetRow = this.dialogImageUrl.splice(evt.newIndex, 1)[0]
-          this.dialogImageUrl.splice(evt.newIndex, 0, targetRow)
-          const tempIndex = this.dialogImageUrl.splice(evt.oldIndex, 1)[0]
-          this.dialogImageUrl.splice(evt.newIndex, 0, tempIndex)
+          this.dialogImageUrl = reSortArrByTwoElement(this.dialogImageUrl, evt.oldIndex, evt.newIndex)
 
           const newArr = this.dialogImageUrl.map(item => { return item.url })
           sortIntroducePic({
