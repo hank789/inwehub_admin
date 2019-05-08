@@ -67,8 +67,9 @@
     <el-table ref="dragTable" v-loading="listLoading" :data="list" :border="false" row-key="id" fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="" width="115">
         <template slot-scope="scope">
-          <div class="container-case-img">
-            <img :src="scope.row.cover_pic" alt="">
+          <div class="container-case-img ">
+            <el-image :src="scope.row.cover_pic" fit="cover" lazy />
+            <!--<img :src="scope.row.cover_pic" alt="">-->
           </div>
         </template>
       </el-table-column>
@@ -451,7 +452,6 @@ export default {
     width: 90px;
     height: 60px;
     border-radius: 4px;
-    background: pink;
     margin: 10px 0;
     img {
       width: 100%;
@@ -503,5 +503,11 @@ export default {
     width: 178px;
     height: 178px;
     display: block;
+  }
+  .container-case-img .el-image {
+    height: 100%;
+  }
+  .container-case-img .el-image img {
+    border-radius: 4px;
   }
 </style>
