@@ -12,7 +12,7 @@
       :on-change="handleAvatarSuccess"
       :on-preview="handlePictureCardPreview"
       :on-remove="handleRemove"
-      :file-list="filePic"
+      :file-list="dialogImageUrl"
       :on-exceed="handleExceed"
       :limit="10"
       :before-remove="beforeRemove"
@@ -63,14 +63,25 @@ export default {
   },
   methods: {
     submit() {
+      console.log(this.dialogImageUrl, '数据')
+      var imageUrlList = this.dialogImageUrl.filter(function(val) {
+        return val.url && val.url.indexOf('base64') >= 0
+      })
+      var imgList = imageUrlList.map(item => { return item.url })
+      console.log(imgList, '数据')
       updateIntroducePic({
         id: this.listQuery.product_id,
-        introduce_pic_arr: this.dialogImageUrl
+        introduce_pic_arr: imgList
       }).then(res => {
         if (res.code === 1000) {
           this.$message({
             message: '提交成功',
             type: 'success'
+          })
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'error'
           })
         }
       })
@@ -80,8 +91,8 @@ export default {
         id: this.listQuery.product_id
       }).then(res => {
         const newArr = res.data.introduce_pic.map(item => { return { url: item } })
-        this.filePic = newArr
-        if (this.filePic.length >= 10) {
+        this.dialogImageUrl = newArr
+        if (this.dialogImageUrl.length >= 10) {
           document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'none'
         } else {
           document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'inline-block'
@@ -109,7 +120,7 @@ export default {
               message: '删除成功',
               type: 'success'
             })
-            this.filePic.length--
+            this.dialogImageUrl.length--
             this.getPicList()
           } else {
             this.$message({
@@ -134,7 +145,7 @@ export default {
         document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'none'
       }
       fileToBase64(file, (base64) => {
-        this.dialogImageUrl.push(base64)
+        this.dialogImageUrl.push({ url: base64 })
       })
     },
     setSort() {
@@ -147,11 +158,12 @@ export default {
           // Detail see : https://github.com/RubaXa/Sortable/issues/1012
         },
         onEnd: evt => {
-          const targetRow = this.filePic.splice(evt.newIndex, 1)[0]
-          this.filePic.splice(evt.newIndex, 0, targetRow)
-          const tempIndex = this.filePic.splice(evt.oldIndex, 1)[0]
-          this.filePic.splice(evt.newIndex, 0, tempIndex)
-          const newArr = this.filePic.map(item => { return item.url })
+          const targetRow = this.dialogImageUrl.splice(evt.newIndex, 1)[0]
+          this.dialogImageUrl.splice(evt.newIndex, 0, targetRow)
+          const tempIndex = this.dialogImageUrl.splice(evt.oldIndex, 1)[0]
+          this.dialogImageUrl.splice(evt.newIndex, 0, tempIndex)
+
+          const newArr = this.dialogImageUrl.map(item => { return item.url })
           sortIntroducePic({
             id: this.listQuery.product_id,
             introduce_pic_arr: newArr
