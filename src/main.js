@@ -22,6 +22,9 @@ import * as filters from './filters' // global filters
 
 import { mockXHR } from '../mock' // simulation data
 
+import ImageView from './components/Image/ImageView.vue'
+Vue.component('ImageView', ImageView)
+
 // mock api in github pages site build
 if (process.env.NODE_ENV === 'production') { mockXHR() }
 

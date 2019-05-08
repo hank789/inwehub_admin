@@ -2,6 +2,30 @@
   <div class="app-container">
     <div class="top-text">请上传统一尺寸的图片，否则以首张图片尺寸为准(限10张)</div>
 
+    <div class="imageListWrapper">
+    <transition-group tag="ul"
+                      :class="[
+      'el-upload-list',
+      'el-upload-list--picture-card',
+
+    ]"
+      name="el-list-test"
+    >
+        <li class="imageItem" v-for="(item, key) in dialogImageUrl" :key="item.url + key">
+          <ImageView :src="item.url"/>
+
+          <div class="itemOperation">
+              <span
+                  @click="removeImage(key)"
+                >
+              <i class="el-icon-delete"></i>
+            </span>
+          </div>
+        </li>
+    </transition-group>
+    </div>
+
+
     <el-upload
       ref="foreignPersonUploadItem"
       class="avatar-image"
@@ -15,6 +39,7 @@
       :file-list="dialogImageUrl"
       :on-exceed="handleExceed"
       :limit="10"
+      :show-file-list="false"
       :before-remove="beforeRemove"
     >
       <div class="container-text">
@@ -77,6 +102,35 @@ export default {
   mounted() {
   },
   methods: {
+    removeImage (index) {
+      this.$confirm('删除后将不可恢复。', '确定删除？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteIntroducePic({
+          introduce_pic: this.dialogImageUrl[index].url,
+          id: this.listQuery.product_id
+        }).then(res => {
+          if (res.code === 1000) {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.dialogImageUrl.splice(index, 1);
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'success'
+            })
+          }
+        })
+      }).catch(() => {
+      })
+    },
+    reLoad (event) {
+      reloadImage(event, 3)
+    },
     submit() {
       updateIntroducePic({
         id: this.listQuery.product_id,
@@ -87,6 +141,7 @@ export default {
             id: this.listQuery.product_id
           }).then(res => {
             const newArr = res.data.introduce_pic.map(item => { return { url: item } })
+            this.dialogImageUrl = []
             this.dialogImageUrl = newArr
             if (this.dialogImageUrl.length >= 10) {
               document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'none'
@@ -128,32 +183,7 @@ export default {
       this.$message.warning(`当前限制选择 10 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
     beforeRemove(file, fileList) {
-      this.$confirm('删除后将不可恢复。', '确定删除？', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        deleteIntroducePic({
-          introduce_pic: file.url,
-          id: this.listQuery.product_id
-        }).then(res => {
-          if (res.code === 1000) {
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            })
-            this.dialogImageUrl.length--
-            this.getPicList()
-          } else {
-            this.$message({
-              message: res.message,
-              type: 'success'
-            })
-          }
-        })
-      }).catch(() => {
-      })
-      return false
+
     },
     handleRemove(file, fileList) {
       console.log(fileList, '删除成功')
@@ -172,7 +202,7 @@ export default {
       })
     },
     setSort() {
-      const el = this.$refs.foreignPersonUploadItem.$el.querySelector('.avatar-image > ul')
+      const el = this.$el.querySelector('.imageListWrapper > ul')
       this.sortable = Sortable.create(el, {
         ghostClass: 'sortable-ghost', // Class name for the drop placeholder,
         setData: function(dataTransfer) {
@@ -200,6 +230,8 @@ export default {
 <style scoped lang="scss">
   .avatar-image {
     margin: 6px 0 20px;
+    display: inline-block;
+    vertical-align: top;
   }
   .top-text {
     color: #7C8EA6;
@@ -216,6 +248,52 @@ export default {
       color: #B1BDCC;
       font-size: 14px;
       line-height: 20px;
+    }
+  }
+
+  .imageListWrapper{
+    margin: 6px 0 20px;
+    display: inline-block;
+    .imageItem{
+      display: inline-block;
+      width: 266px;
+      height: 399px;
+      border-radius: 6px;
+      background: #fff;
+      overflow: hidden;
+      margin: 0 8px 8px 0;
+      position: relative;
+      cursor:pointer;
+
+      .itemOperation{
+        position: absolute;
+        top:0;
+        left:0;
+        bottom:0;
+        width:100%;
+        height:100%;
+        background: #000;
+        cursor: pointer;
+        z-index:9;
+        color:#fff;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+
+      &:hover{
+        .itemOperation{
+          display: flex;
+          opacity: 0.7;
+        }
+      }
+
+
+        img{
+          width:100%;
+          height:100%;
+          object-fit: cover;
+        }
     }
   }
 </style>
