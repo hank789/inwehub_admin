@@ -2,34 +2,59 @@
   <div class="app-container">
     <div class="top-text">请上传统一尺寸的图片，否则以首张图片尺寸为准(限10张)</div>
 
-    <el-upload
-      ref="foreignPersonUploadItem"
-      class="avatar-image"
-      action="''"
-      :auto-upload="false"
-      multiple
-      list-type="picture-card"
-      :on-change="handleAvatarSuccess"
-      :on-preview="handlePictureCardPreview"
-      :on-remove="handleRemove"
-      :file-list="filePic"
-      :on-exceed="handleExceed"
-      :limit="10"
-      :before-remove="beforeRemove"
-    >
-      <div class="container-text">
-        <svg-icon icon-class="camera" />
-        <div>添加产品亮点图</div>
-        <div>推荐尺寸900px*1250px</div>
-      </div>
-    </el-upload>
+    <div class="imageListWrapper">
+      <transition-group
+        tag="ul"
+        :class="[
+          'el-upload-list',
+          'el-upload-list--picture-card',
+
+        ]"
+        name="el-list-test"
+      >
+        <li v-for="(item, key) in dialogImageUrl" :key="item.url + key" class="imageItem">
+          <ImageView :src="item.url" />
+
+          <div class="itemOperation">
+            <span
+              @click="removeImage(key)"
+            >
+              <i class="el-icon-delete" />
+            </span>
+          </div>
+        </li>
+      </transition-group>
+
+      <el-upload
+        ref="foreignPersonUploadItem"
+        class="avatar-image"
+        action="''"
+        :auto-upload="false"
+        multiple
+        list-type="picture-card"
+        :on-change="handleAvatarSuccess"
+        :on-preview="handlePictureCardPreview"
+        :on-remove="handleRemove"
+        :file-list="dialogImageUrl"
+        :on-exceed="handleExceed"
+        :limit="10"
+        :show-file-list="false"
+        :before-remove="beforeRemove"
+      >
+        <div class="container-text">
+          <svg-icon icon-class="camera" />
+          <div>添加产品亮点图</div>
+          <div>推荐尺寸900px*1250px</div>
+        </div>
+      </el-upload>
+    </div>
 
     <el-dialog :visible.sync="dialogVisible" class="image-list">
-      <img width="100%" :src="dialogImageUrl" alt="">
+      <img width="100%" :src="dialogImageUrlReview" alt="">
     </el-dialog>
 
     <el-row>
-      <el-button type="primary" @click="submit">保存</el-button>
+      <el-button type="primary" @click="submitBtn">保存</el-button>
     </el-row>
   </div>
 </template>
@@ -38,10 +63,12 @@
 import { getIntroducePic, updateIntroducePic, deleteIntroducePic, sortIntroducePic } from '@/api/product'
 import { fileToBase64 } from '@/utils/image'
 import Sortable from 'sortablejs'
+import { reSortArrByTwoElement } from '@/utils/array'
 export default {
   data: function() {
     return {
       dialogImageUrl: [],
+      dialogImageUrlReview: '',
       dialogVisible: false,
       listQuery: {
         product_id: ''
@@ -50,6 +77,18 @@ export default {
       sortable: null,
       oldList: [],
       newList: []
+    }
+  },
+  computed: {
+    addData() {
+      const rs = []
+      for (var i in this.dialogImageUrl) {
+        const item = this.dialogImageUrl[i]
+        if (item.isNew) {
+          rs.push(item.url)
+        }
+      }
+      return rs
     }
   },
   created() {
@@ -62,17 +101,62 @@ export default {
   mounted() {
   },
   methods: {
+    removeImage(index) {
+      this.$confirm('删除后将不可恢复。', '确定删除？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteIntroducePic({
+          introduce_pic: this.dialogImageUrl[index].url,
+          id: this.listQuery.product_id
+        }).then(res => {
+          if (res.code === 1000) {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.dialogImageUrl.splice(index, 1)
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'success'
+            })
+          }
+        })
+      }).catch(() => {
+      })
+    },
     submit() {
       updateIntroducePic({
         id: this.listQuery.product_id,
-        introduce_pic_arr: this.dialogImageUrl
+        introduce_pic_arr: this.addData
       }).then(res => {
         if (res.code === 1000) {
+          getIntroducePic({
+            id: this.listQuery.product_id
+          }).then(res => {
+            const newArr = res.data.introduce_pic.map(item => { return { url: item } })
+            this.dialogImageUrl = []
+            this.dialogImageUrl = newArr
+            if (this.dialogImageUrl.length >= 10) {
+              document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'none'
+            } else {
+              document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'inline-block'
+            }
+          })
+        } else {
           this.$message({
-            message: '提交成功',
-            type: 'success'
+            message: res.message,
+            type: 'error'
           })
         }
+      })
+    },
+    submitBtn() {
+      this.$message({
+        message: '提交成功',
+        type: 'success'
       })
     },
     getPicList() {
@@ -80,8 +164,8 @@ export default {
         id: this.listQuery.product_id
       }).then(res => {
         const newArr = res.data.introduce_pic.map(item => { return { url: item } })
-        this.filePic = newArr
-        if (this.filePic.length >= 10) {
+        this.dialogImageUrl = newArr
+        if (this.dialogImageUrl.length >= 10) {
           document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'none'
         } else {
           document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'inline-block'
@@ -95,38 +179,13 @@ export default {
       this.$message.warning(`当前限制选择 10 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
     beforeRemove(file, fileList) {
-      this.$confirm('删除后将不可恢复。', '确定删除？', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        deleteIntroducePic({
-          introduce_pic: file.url,
-          id: this.listQuery.product_id
-        }).then(res => {
-          if (res.code === 1000) {
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            })
-            this.filePic.length--
-            this.getPicList()
-          } else {
-            this.$message({
-              message: res.message,
-              type: 'success'
-            })
-          }
-        })
-      }).catch(() => {
-      })
-      return false
+
     },
     handleRemove(file, fileList) {
       console.log(fileList, '删除成功')
     },
     handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url
+      this.dialogImageUrlReview = file.url
       this.dialogVisible = true
     },
     handleAvatarSuccess(file, fileList) {
@@ -134,11 +193,12 @@ export default {
         document.querySelector('.avatar-image .el-upload--picture-card').style.display = 'none'
       }
       fileToBase64(file, (base64) => {
-        this.dialogImageUrl.push(base64)
+        this.dialogImageUrl.push({ url: base64, isNew: true })
+        this.submit()
       })
     },
     setSort() {
-      const el = this.$refs.foreignPersonUploadItem.$el.querySelector('.avatar-image > ul')
+      const el = this.$el.querySelector('.imageListWrapper > ul')
       this.sortable = Sortable.create(el, {
         ghostClass: 'sortable-ghost', // Class name for the drop placeholder,
         setData: function(dataTransfer) {
@@ -147,11 +207,9 @@ export default {
           // Detail see : https://github.com/RubaXa/Sortable/issues/1012
         },
         onEnd: evt => {
-          const targetRow = this.filePic.splice(evt.newIndex, 1)[0]
-          this.filePic.splice(evt.newIndex, 0, targetRow)
-          const tempIndex = this.filePic.splice(evt.oldIndex, 1)[0]
-          this.filePic.splice(evt.newIndex, 0, tempIndex)
-          const newArr = this.filePic.map(item => { return item.url })
+          this.dialogImageUrl = reSortArrByTwoElement(this.dialogImageUrl, evt.oldIndex, evt.newIndex)
+
+          const newArr = this.dialogImageUrl.map(item => { return item.url })
           sortIntroducePic({
             id: this.listQuery.product_id,
             introduce_pic_arr: newArr
@@ -167,7 +225,8 @@ export default {
 
 <style scoped lang="scss">
   .avatar-image {
-    margin: 6px 0 20px;
+    display: inline-block;
+    vertical-align: top;
   }
   .top-text {
     color: #7C8EA6;
@@ -184,6 +243,51 @@ export default {
       color: #B1BDCC;
       font-size: 14px;
       line-height: 20px;
+    }
+  }
+
+  .imageListWrapper{
+    margin: 6px 0 20px;
+    display: inline-block;
+    .imageItem{
+      display: inline-block;
+      width: 266px;
+      height: 399px;
+      border-radius: 6px;
+      background: #fff;
+      overflow: hidden;
+      margin: 0 8px 8px 0;
+      position: relative;
+      cursor:pointer;
+
+      .itemOperation{
+        position: absolute;
+        top:0;
+        left:0;
+        bottom:0;
+        width:100%;
+        height:100%;
+        background: #000;
+        cursor: pointer;
+        z-index:9;
+        color:#fff;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+
+      &:hover{
+        .itemOperation{
+          display: flex;
+          opacity: 0.7;
+        }
+      }
+
+        img{
+          width:100%;
+          height:100%;
+          object-fit: cover;
+        }
     }
   }
 </style>

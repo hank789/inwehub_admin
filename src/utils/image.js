@@ -6,3 +6,18 @@ export function fileToBase64(file, successCallback) {
     successCallback(e.target.result)
   }
 }
+
+export function reloadImage(event, maxErrorNum) {
+  const imgObj = event.currentTarget
+  console.log(imgObj)
+  if (maxErrorNum > 0) {
+    imgObj.onerror = function() {
+      reloadImage(event, maxErrorNum - 1)
+    }
+    setTimeout(function() {
+      imgObj.src = imgObj.src + '?time' + new Date().getTime()
+    }, 500)
+  } else {
+    imgObj.onerror = null
+  }
+}
