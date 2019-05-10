@@ -22,3 +22,11 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function sendYzmCode(data) {
+  return request({
+    url: '/auth/sendPhoneCode',
+    method: 'post',
+    data
+  })
+}
